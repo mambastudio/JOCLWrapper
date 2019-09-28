@@ -33,6 +33,7 @@ public class CBufferMemory<B extends Buffer> extends CMemory<B>
         queue.putReadBuffer(this);
         buffer.rewind(); //set read position to 0 but limit remain same
         function.call(buffer);
+        buffer.rewind();
         return buffer;
     }
     
@@ -42,6 +43,7 @@ public class CBufferMemory<B extends Buffer> extends CMemory<B>
         function.call(buffer);
         buffer.rewind();  // set read position to 0 but limit remains same
         queue.putWriteBuffer(this);
+        buffer.rewind();
         return buffer;
     }      
 }

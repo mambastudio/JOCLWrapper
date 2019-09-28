@@ -5,52 +5,59 @@
  */
 package wrapper.core.buffer;
 
+import coordinate.struct.ByteStruct;
+import coordinate.struct.StructByteArray;
 import java.nio.ByteBuffer;
 import org.jocl.Pointer;
 import org.jocl.cl_mem;
 import wrapper.core.CCommandQueue;
 import wrapper.core.CMemory;
-import wrapper.core.CallBackArray;
+import wrapper.core.CallBackStructByteArray;
 
 /**
  *
  * @author user
  * @param <B>
  */
-public class CStructTypeBuffer <B> extends CMemory<ByteBuffer> {
-    private final B[] structs;
+public class CStructTypeBuffer <B extends ByteStruct> extends CMemory<ByteBuffer> {
+    private final StructByteArray<B> structByteArray;
     
-    public CStructTypeBuffer(cl_mem memory, B[] structs, ByteBuffer buffer, Pointer pointer, long cl_size) {
+    public CStructTypeBuffer(cl_mem memory, StructByteArray<B> structByteArray, ByteBuffer buffer, Pointer pointer, long cl_size) {
         super(memory, buffer, pointer, cl_size);
-        this.structs = structs;
+        this.structByteArray = structByteArray;
     }
     
-    public B[] mapReadBuffer(CCommandQueue queue, CallBackArray<B> function)
+    public StructByteArray<B> mapReadBuffer(CCommandQueue queue, CallBackStructByteArray<B> function)
     {
+        buffer.clear(); //reset buffer to 0 position
+        buffer.rewind();
         queue.putReadBuffer(this);
-        function.call(structs);
-        return structs;
+        buffer.rewind(); //set read position to 0 but limit remain same
+        function.call(structByteArray);
+        return structByteArray;
     }
     
-    public B[] mapWriteBuffer(CCommandQueue queue, CallBackArray<B> function)
+    public StructByteArray<B>  mapWriteBuffer(CCommandQueue queue, CallBackStructByteArray<B> function)
     { 
-        function.call(structs);
+        buffer.clear(); //reset buffer
+        function.call(structByteArray);
+        buffer.rewind();  // set read position to 0 but limit remains same
         queue.putWriteBuffer(this);
-        return structs;
+        return structByteArray;
+    }
+    
+    public StructByteArray<B> getStructByteArray()
+    {
+        return  structByteArray;
     }
     
     public B get(int i)
     {        
-        return structs[i];
+        return structByteArray.get(i);
     }
-    
-    public B[] getStructArray()
-    {
-        return structs;
-    }
-    
+        
     public int getSize()
     {
-        return structs.length;
+        return structByteArray.size();
     }   
 }

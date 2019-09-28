@@ -5,8 +5,11 @@
  */
 package wrapper.core;
 
+import coordinate.struct.ByteStruct;
+import coordinate.struct.StructByteArray;
 import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -24,6 +27,7 @@ import static wrapper.core.CMemory.COPY_HOST_PTR;
 import static wrapper.core.CMemory.READ_ONLY;
 import static wrapper.core.CMemory.READ_WRITE;
 import static wrapper.core.CMemory.WRITE_ONLY;
+import wrapper.core.buffer.CByteBuffer;
 import wrapper.core.buffer.CFloatBuffer;
 import wrapper.core.buffer.CIntBuffer;
 import wrapper.core.buffer.CStructBuffer;
@@ -40,6 +44,18 @@ import wrapper.core.svm.CSVMStructBuffer;
  */
 public class CBufferFactory 
 {
+    public static CByteBuffer allocByte(String name, CContext context, int size, long flag)
+    {
+        validate(flag);
+        ByteBuffer buffer = ByteBuffer.allocate(size).order(ByteOrder.nativeOrder());        
+        Pointer ptr = Pointer.to(buffer);         
+        long clSize = size;        
+        cl_mem clMem = clCreateBuffer(context.getId(), flag, clSize, null, null);
+        CByteBuffer cbuffer =  new CByteBuffer(clMem, buffer, ptr, clSize); 
+        CResourceFactory.registerMemory(name, cbuffer);
+        return cbuffer; 
+    }
+    
     public static CFloatBuffer allocFloat(String name, CContext context, int size, long flag)
     {
         validate(flag);
@@ -112,29 +128,22 @@ public class CBufferFactory
         return cbuffer; 
     }
     
-    public static <B> CStructTypeBuffer<B> allocStructType(String name, CContext context, ByteBuffer b)
+    public static <B extends ByteStruct> CStructTypeBuffer<B> allocStructType(String name, CContext context, Class<B> clazz, int size, long flag)
     {
-        
-        
-        /*
-        ByteBuffer structBuffer = ByteBuffer.allocateDirect(structSize).order(ByteOrder.nativeOrder());
-        structBuffer.order(ByteOrder.nativeOrder());
-        
-        B[] b =  Mem.wrap(structBuffer, type);  
-        
-        Pointer pointer = Pointer.to(structBuffer); 
+        StructByteArray<B> structArray = new StructByteArray(clazz, size);
+        int byteArraySize = structArray.getByteArraySize();
+        ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        
+        Pointer pointer = Pointer.to(buffer); 
         
         cl_mem clMem;
         if(flagHasPointer(flag))
-            clMem = CL.clCreateBuffer(context.getId(), flag, structSize, pointer, null);        
+            clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, pointer, null);        
         else
-            clMem = CL.clCreateBuffer(context.getId(), flag, structSize, null, null);
+            clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);
         
-        CStructTypeBuffer<B> cbuffer = new CStructTypeBuffer(clMem, b, structBuffer, pointer, structSize);
+        CStructTypeBuffer<B> cbuffer = new CStructTypeBuffer(clMem, structArray, buffer, pointer, byteArraySize);
         CResourceFactory.registerMemory(name, cbuffer);
         return cbuffer;
-       */
-        return null;
     }
     
     public static <B extends Struct> CStructBuffer<B> allocStruct(String name, CContext context, Class<B> structClass, int size, long flag)

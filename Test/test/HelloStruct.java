@@ -27,7 +27,7 @@ public class HelloStruct {
     public static void main(String... args)
     {
         CPlatform platform = CConfiguration.getDefault();
-        CDevice device = platform.getDefaultDevice();        
+        CDevice device = platform.getDeviceCPU();
         CContext context = platform.createContext(device);
         CProgram program = context.createProgram(programSource);        
         CCommandQueue queue = context.createCommandQueue(device);
@@ -41,7 +41,7 @@ public class HelloStruct {
             for (int i=0; i<n; i++)
             {
                // particles[i] = new Particle(); //instantiated from allocStruct method above
-                particles[i].mass = i;
+               // particles[i].mass = i;
                 particles[i].position.set(0, i);
                 particles[i].position.set(1, i);
                 particles[i].position.set(2, i);
@@ -101,7 +101,8 @@ public class HelloStruct {
         "__kernel void test(__global Particle *particles)"+ "\n" +
         "{"+ "\n" +
         "    int gid = get_global_id(0);"+ "\n" +
-        "    particles[gid].mass *= 2;"+ "\n" +
+            "    printf(\"%2d\\n\", gid);" +                   
+       // "    particles[gid].mass = gid;"+ "\n" +
         "    particles[gid].position *= 2;"+ "\n" +
         "    particles[gid].velocity *= 2;"+ "\n" +
         "}";

@@ -25,7 +25,7 @@ public class OpenCLPlatform
     {
         OpenCLPlatform configuration = new OpenCLPlatform();        
         configuration.platform = CPlatform.getFirst();
-        configuration.device = configuration.platform.getDeviceGPU();
+        configuration.device = configuration.platform.getDeviceCPU();
         configuration.context = configuration.platform.createContext(configuration.device);
         configuration.program = configuration.context.createProgram(sources);
         configuration.queue = configuration.context.createCommandQueue(configuration.device);

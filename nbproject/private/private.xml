@@ -3,11 +3,8 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/user/Documents/NetBeansProjects/JOCLWrapper/src/wrapper/core/buffer/CStructTypeBuffer.java</file>
-            <file>file:/C:/Users/user/Documents/NetBeansProjects/JOCLWrapper/src/wrapper/core/CBufferFactory.java</file>
-            <file>file:/C:/Users/user/Documents/NetBeansProjects/JOCLWrapper/src/wrapper/core/CallBackArray.java</file>
-            <file>file:/C:/Users/user/Documents/NetBeansProjects/JOCLWrapper/src/wrapper/core/buffer/CStructBuffer.java</file>
-            <file>file:/C:/Users/user/Documents/NetBeansProjects/JOCLWrapper/Test/test/HelloStruct.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/HelloByteJOCL.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/HelloStructType.java</file>
         </group>
     </open-files>
 </project-private>
