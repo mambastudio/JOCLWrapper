@@ -31,7 +31,7 @@ import wrapper.util.CLFileReader;
  * It has been modified to deal with arbitrary array size of "not n^2"
  */
 public class Scan { 
-    static int LOCALSIZECONSTANT = 32;
+    static int LOCALSIZECONSTANT = 512;
     
     public static void main(String... args)
     {
