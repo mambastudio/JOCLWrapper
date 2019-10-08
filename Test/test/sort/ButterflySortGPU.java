@@ -27,7 +27,7 @@ public class ButterflySortGPU {
         CL.setExceptionsEnabled(true);
         OpenCLPlatform configuration = OpenCLPlatform.getDefault(CLFileReader.readFile(ButterflySortGPU.class, "ButterflySort.cl"));
         
-        int data[] = new Random().ints(100, 0, 50).toArray();  //size, range (i, j)
+        int data[] = new Random().ints(1000, 0, 50).toArray();  //size, range (i, j)
         System.out.println(Arrays.toString(data));
                         
         CIntBuffer cdata   = configuration.createFromIntArray("data", READ_WRITE, data); 

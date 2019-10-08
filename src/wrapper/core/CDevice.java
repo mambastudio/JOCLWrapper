@@ -5,6 +5,7 @@
  */
 package wrapper.core;
 
+import org.jocl.CL;
 import static org.jocl.CL.CL_DEVICE_MAX_CLOCK_FREQUENCY;
 import static org.jocl.CL.CL_DEVICE_NAME;
 import static org.jocl.CL.CL_DEVICE_TYPE;
@@ -48,6 +49,11 @@ public class CDevice extends CObject
     public long getSpeed()
     {
         return getLong(getId(), CL_DEVICE_MAX_CLOCK_FREQUENCY);
+    }
+    
+    public long getMaximumWorkGroupSize()
+    {
+        return getLong(getId(), CL.CL_DEVICE_MAX_WORK_GROUP_SIZE);
     }
     
     public String getType()
