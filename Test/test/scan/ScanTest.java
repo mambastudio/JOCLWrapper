@@ -38,9 +38,16 @@ public class ScanTest {
         
         CFloatScan scan = new CFloatScan(configuration);
         scan.init(floatBuffer);
-        scan.executeTotalElements();
+        
+        
+        scan.executeTotalSum();
         
          
-        System.out.println(scan.getTotalElements());
+        System.out.println(scan.getTotal());
+        
+        for(int i = 0; i<100000; i++)
+            scan.executeTotalSum();
+        
+        System.out.println(scan.getTotal());
     }
 }

@@ -65,6 +65,8 @@ public class CFloatScan {
     
     private CFloatBuffer floatBuffer;
     
+   
+    
     public CFloatScan(OpenCLPlatform configuration)
     {
         this.configuration = configuration;

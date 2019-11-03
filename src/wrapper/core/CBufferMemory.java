@@ -45,5 +45,10 @@ public class CBufferMemory<B extends Buffer> extends CMemory<B>
         queue.putWriteBuffer(this);
         buffer.rewind();
         return buffer;
-    }      
+    }     
+    
+    public int getBufferSize()
+    {
+        return buffer.capacity();
+    }
 }
