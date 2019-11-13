@@ -146,6 +146,23 @@ public class CBufferFactory
         return cbuffer;
     }
     
+    public static <B extends ByteStruct> CStructTypeBuffer<B> allocStructType(String name, CContext context, StructByteArray structArray, int size, long flag)
+    {
+        int byteArraySize = structArray.getByteArraySize();
+        ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        
+        Pointer pointer = Pointer.to(buffer); 
+        
+        cl_mem clMem;
+        if(flagHasPointer(flag))
+            clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, pointer, null);        
+        else
+            clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);
+        
+        CStructTypeBuffer<B> cbuffer = new CStructTypeBuffer(clMem, structArray, buffer, pointer, byteArraySize);
+        CResourceFactory.registerMemory(name, cbuffer);
+        return cbuffer;
+    }
+    
     public static <B extends Struct> CStructBuffer<B> allocStruct(String name, CContext context, Class<B> structClass, int size, long flag)
     {
         validate(flag);
