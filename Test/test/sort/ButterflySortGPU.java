@@ -44,8 +44,10 @@ public class ButterflySortGPU {
             localSize  = "globalSize = 8   if globalSize < 256 "
                          "     256          otherwise          "           
         */                 
+        
+        System.out.println(T);
         int globalSize = T;
-        int localSize = 1;
+        int localSize = 256;
         
         //kernel initialization
         CKernel cbutterfly1    = configuration.createKernel("butterfly1", cdata, clength, cpowerx);

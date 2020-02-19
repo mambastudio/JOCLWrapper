@@ -18,6 +18,8 @@ import static org.jocl.CL.clGetDeviceInfo;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_device_id;
+import static wrapper.core.CDevice.DeviceType.CPU;
+import static wrapper.core.CDevice.DeviceType.GPU;
 
 /**
  *
@@ -25,6 +27,8 @@ import org.jocl.cl_device_id;
  */
 public class CDevice extends CObject
 {    
+    public enum DeviceType{GPU, CPU}
+    
     public CDevice(cl_device_id device_id)
     {
         super(device_id);
@@ -54,6 +58,30 @@ public class CDevice extends CObject
     public long getMaximumWorkGroupSize()
     {
         return getLong(getId(), CL.CL_DEVICE_MAX_WORK_GROUP_SIZE);
+    }
+    
+    public boolean isGPU()
+    {
+        return getType().equals("CL_DEVICE_TYPE_GPU");
+    }
+    
+    public boolean isCPU()
+    {
+        return getType().equals("CL_DEVICE_TYPE_CPU");
+    }
+    
+    public boolean isDeviceType(DeviceType type)
+    {
+        if(null == type)
+            return false;
+        else switch (type) {
+            case GPU:
+                return isGPU();
+            case CPU:
+                return isCPU();
+            default:
+                return false;
+        }
     }
     
     public String getType()

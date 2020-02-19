@@ -16,6 +16,9 @@ import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
 import org.jocl.cl_platform_id;
+import wrapper.core.CDevice.DeviceType;
+import static wrapper.core.CDevice.DeviceType.CPU;
+import static wrapper.core.CDevice.DeviceType.GPU;
 
 /**
  *
@@ -23,6 +26,7 @@ import org.jocl.cl_platform_id;
  */
 public class CPlatform  extends CObject
 {    
+    private final List<CDevice> devices;
     private final cl_device_id[] device_ids;
     
     public CPlatform(cl_platform_id id)
@@ -42,7 +46,10 @@ public class CPlatform  extends CObject
                 numDevices[0],
                 device_ids,
                 null
-                );      
+                );   
+        devices = new ArrayList<>();
+        for(cl_device_id device_id: device_ids)
+            devices.add(new CDevice(device_id));
     }
     
     public String getInfo(int paramName)
@@ -64,9 +71,31 @@ public class CPlatform  extends CObject
         return getPlatforms().stream().findFirst().orElse(null);
     }
     
+    public static CPlatform getFastestPlatform(DeviceType deviceType)
+    {
+        CPlatform fastestPlatform = null;
+        List<CPlatform> platforms = getPlatforms(); 
+        long maxClock = 0;
+        
+        for(CPlatform platform : platforms)
+        {
+            List<CDevice> deviceList = platform.getDevices(deviceType);
+            for(CDevice device : deviceList)
+            {
+                if(device.getSpeed() > maxClock)
+                {
+                    maxClock = device.getSpeed(); 
+                    fastestPlatform = platform;
+                }
+            }
+        }
+        
+        return fastestPlatform;
+    }
+    
     public static List<CPlatform> getPlatforms()
     {
-        cl_platform_id platforms[] = new cl_platform_id[getNumberOfPlatforms()];
+        cl_platform_id platforms[] = new cl_platform_id[getNumberOfPlatforms()];        
         clGetPlatformIDs(platforms.length, platforms, null);
         return Arrays.stream(platforms).map(x -> new CPlatform(x)).collect(Collectors.toList());	
     }
@@ -78,6 +107,7 @@ public class CPlatform  extends CObject
         return numPlatformsArray[0];
     }
     
+<<<<<<< HEAD
     public ArrayList<CDevice> getAllDevices()
     {
         ArrayList<CDevice> devices = new ArrayList<>();
@@ -89,6 +119,43 @@ public class CPlatform  extends CObject
     public cl_device_id[] getAllDevicesIDs()
     {
         return device_ids;
+=======
+    public List<CDevice> getDevices()
+    {
+        return devices;
+    }
+    
+    public List<CDevice> getDevices(DeviceType type)
+    {
+        if(null == type)
+            return null;
+        else switch (type) {
+            case CPU:
+                return getCPUDevices();
+            case GPU:
+                return getGPUDevices();
+            default:
+                return null;
+        }
+    }
+    
+    public List<CDevice> getGPUDevices()
+    {
+        List<CDevice> gpuDevices = new ArrayList<>();
+        devices.stream().filter((device) -> (device.isGPU())).forEachOrdered((device) -> {
+            gpuDevices.add(device);
+        });
+        return gpuDevices;
+    }
+    
+    public List<CDevice> getCPUDevices()
+    {
+        List<CDevice> gpuDevices = new ArrayList<>();
+        devices.stream().filter((device) -> (device.isCPU())).forEachOrdered((device) -> {
+            gpuDevices.add(device);
+        });
+        return gpuDevices;
+>>>>>>> b459a896fc39f93a260df5ca672038ef50dd07f6
     }
     
     public CDevice getDefaultDevice()
@@ -103,19 +170,19 @@ public class CPlatform  extends CObject
     
     public CDevice getDeviceCPU()
     {
-        int[] numGPUDevice = new int[1];
-        clGetDeviceIDs(getId(), CL_DEVICE_TYPE_CPU, 0, null, numGPUDevice);
+        int[] numCPUDevice = new int[1];
+        clGetDeviceIDs(getId(), CL_DEVICE_TYPE_CPU, 0, null, numCPUDevice);
         
-        cl_device_id [] gpu_ids = new cl_device_id[numGPUDevice[0]];
+        cl_device_id [] cpu_ids = new cl_device_id[numCPUDevice[0]];
         clGetDeviceIDs(
                 getId(),
                 CL_DEVICE_TYPE_CPU,
-                numGPUDevice[0],
-                gpu_ids,
+                numCPUDevice[0],
+                cpu_ids,
                 null
                 );  
         
-        return new CDevice(gpu_ids[0]);
+        return new CDevice(cpu_ids[0]);
     }
     
     public CDevice getDeviceGPU()
@@ -137,23 +204,16 @@ public class CPlatform  extends CObject
     
     public CDevice getFastestDeviceGPU()
     {
-        int[] numGPUDevice = new int[1];
-        clGetDeviceIDs(getId(), CL_DEVICE_TYPE_GPU, 0, null, numGPUDevice);
-        
-        cl_device_id [] gpu_ids = new cl_device_id[numGPUDevice[0]];
-        clGetDeviceIDs(
-                getId(),
-                CL_DEVICE_TYPE_GPU,
-                numGPUDevice[0],
-                gpu_ids,
-                null
-                );  
-        
-        cl_device_id gpu_max = gpu_ids[0];
-        for(cl_device_id gpu : gpu_ids)                   
-            if(getLong(gpu, CL_DEVICE_MAX_CLOCK_FREQUENCY) > getLong(gpu_max, CL_DEVICE_MAX_CLOCK_FREQUENCY))
-                gpu_max = gpu;
-        return new CDevice(gpu_max); 
+        List<CDevice> gpuDevices = getGPUDevices();
+        CDevice fastestGPU = null;
+        long maxClock = 0;
+        for(CDevice device : gpuDevices)
+            if(device.getSpeed() > maxClock)
+            {
+                fastestGPU = device;
+                maxClock = device.getSpeed();
+            }
+        return fastestGPU;
     }
     
     @Override

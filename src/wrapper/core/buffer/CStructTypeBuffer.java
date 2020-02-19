@@ -52,7 +52,7 @@ public class CStructTypeBuffer <B extends ByteStruct> extends CMemory<ByteBuffer
     }
     
     public B get(int i)
-    {        
+    {                
         return structByteArray.get(i);
     }
         
