@@ -28,7 +28,7 @@ public class OpenCLPlatform
     public static OpenCLPlatform getDefault(String... sources)
     {
         OpenCLPlatform configuration = new OpenCLPlatform();        
-        configuration.platform = CPlatform.getFastestPlatform(CPU);
+        configuration.platform = CPlatform.getFastestPlatform(GPU);
         configuration.device = configuration.platform.getDeviceGPU();
         configuration.context = configuration.platform.createContext(configuration.device);
         configuration.program = configuration.context.createProgram(sources);
