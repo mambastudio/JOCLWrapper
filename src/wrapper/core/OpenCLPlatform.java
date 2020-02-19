@@ -5,9 +5,13 @@
  */
 package wrapper.core;
 
+import coordinate.struct.ByteStruct;
 import java.nio.Buffer;
+import static wrapper.core.CDevice.DeviceType.CPU;
+import static wrapper.core.CDevice.DeviceType.GPU;
 import wrapper.core.buffer.CFloatBuffer;
 import wrapper.core.buffer.CIntBuffer;
+import wrapper.core.buffer.CStructTypeBuffer;
 
 /**
  *
@@ -24,7 +28,7 @@ public class OpenCLPlatform
     public static OpenCLPlatform getDefault(String... sources)
     {
         OpenCLPlatform configuration = new OpenCLPlatform();        
-        configuration.platform = CPlatform.getFirst();
+        configuration.platform = CPlatform.getFastestPlatform(CPU);
         configuration.device = configuration.platform.getDeviceGPU();
         configuration.context = configuration.platform.createContext(configuration.device);
         configuration.program = configuration.context.createProgram(sources);
@@ -59,6 +63,11 @@ public class OpenCLPlatform
     public CIntBuffer allocIntValue(String name, int value, long flag)
     {
         return CBufferFactory.initIntValue(name, context, queue, value, flag);
+    }
+    
+    public <B extends ByteStruct> CStructTypeBuffer<B> allocStructType(String name, Class<B> clazz, int size, long flag)
+    {
+        return CBufferFactory.allocStructType(name, context(), clazz, size, flag);
     }
     
     public CFloatBuffer createFromFloatArray(String name, long flag, float... array)

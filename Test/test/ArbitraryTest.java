@@ -12,8 +12,7 @@ package test;
 public class ArbitraryTest {
     public static void main(String... args)
     {
-        int a = 12;
-        int x = Integer.SIZE - Integer.numberOfLeadingZeros(a - 1);
-        System.out.println(x);
+        int rgb = (254 << 24)|(254 << 16)|(254 << 8)|254;
+        System.out.println(rgb);
     }
 }

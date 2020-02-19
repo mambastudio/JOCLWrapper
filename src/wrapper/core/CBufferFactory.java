@@ -146,7 +146,7 @@ public class CBufferFactory
         return cbuffer;
     }
     
-    public static <B extends ByteStruct> CStructTypeBuffer<B> allocStructType(String name, CContext context, StructByteArray structArray, int size, long flag)
+    public static <B extends ByteStruct> CStructTypeBuffer<B> allocStructType(String name, CContext context, StructByteArray structArray, long flag)
     {
         int byteArraySize = structArray.getByteArraySize();
         ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        

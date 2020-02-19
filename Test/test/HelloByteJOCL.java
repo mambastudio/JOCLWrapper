@@ -8,7 +8,7 @@ package test;
 import coordinate.generic.AbstractCoordinate;
 import coordinate.struct.ByteStruct;
 import coordinate.struct.StructByteArray;
-import coordinate.utility.StructInfo;
+import coordinate.struct.refl.ByteStructInfo;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import wrapper.core.CBufferFactory;
@@ -37,7 +37,7 @@ public class HelloByteJOCL {
         
         int globalSize = 10;
         
-        CByteBuffer cbuffer = CBufferFactory.allocByte("paticles", context, StructInfo.getByteArraySize(Particle.class, globalSize), READ_WRITE);
+        CByteBuffer cbuffer = CBufferFactory.allocByte("paticles", context, ByteStructInfo.getByteArraySize(Particle.class, globalSize), READ_WRITE);
         
         CKernel vectorAdd = program.createKernel("test");
         vectorAdd.putArgs(cbuffer);        

@@ -5,7 +5,7 @@
  */
 package test;
 
-import coordinate.generic.AbstractCoordinate;
+import coordinate.generic.AbstractCoordinateFloat;
 import coordinate.struct.ByteStruct;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -49,6 +49,12 @@ public class HelloStructType {
         //execute kernel
         CKernel kernel = program.createKernel("test");
         kernel.putArgs(particleBuffer);
+        
+        //CResourceFactory.releaseMemory("particle", "test");
+        
+        particleBuffer = CBufferFactory.allocStructType("particle", context, Particle.class, n, READ_WRITE);         
+        kernel.resetPutArgs(particleBuffer);
+        
         queue.put1DRangeKernel(kernel, n, 1);
 
         //read output
@@ -91,53 +97,7 @@ public class HelloStructType {
             velocity.z = z;
             this.refreshGlobalArray();
         }
-
-        @Override
-        public void initFromGlobalArray() {
-
-            ByteBuffer buffer = this.getLocalByteBuffer(ByteOrder.nativeOrder()); //main buffer but position set to index and limit to size of struct
-            int[] offsets = this.getOffsets();
-            int pos = buffer.position();
-
-            buffer.position(pos + offsets[0]);
-            position.x = buffer.getFloat();
-            position.y = buffer.getFloat();
-            position.z = buffer.getFloat();
-
-            buffer.position(pos + offsets[1]);
-            mass = buffer.getFloat();
-
-            buffer.position(pos + offsets[2]);
-            velocity.x = buffer.getFloat();
-            velocity.y = buffer.getFloat();
-            velocity.z = buffer.getFloat();
-        }
-
-        @Override
-        public byte[] getArray() {
-
-            ByteBuffer buffer = this.getEmptyLocalByteBuffer(ByteOrder.nativeOrder());
-            int[] offsets = this.getOffsets();
-            int pos = buffer.position();
-
-            buffer.position(pos + offsets[0]);
-            buffer.putFloat(position.x);
-            buffer.putFloat(position.y);
-            buffer.putFloat(position.z);
-            buffer.putFloat(position.w);
-
-            buffer.position(pos + offsets[1]);
-            buffer.putFloat(mass);
-
-            buffer.position(pos + offsets[2]);
-            buffer.putFloat(velocity.x);
-            buffer.putFloat(velocity.y);
-            buffer.putFloat(velocity.z);
-            buffer.putFloat(velocity.w);
-
-            return buffer.array();
-        }
-
+       
         @Override
         public String toString() {
             return "Particle["
@@ -148,7 +108,7 @@ public class HelloStructType {
 
     }
 
-    public static class Float4 implements AbstractCoordinate {
+    public static class Float4 implements AbstractCoordinateFloat {
 
         public float x, y, z, w;
 
@@ -165,6 +125,19 @@ public class HelloStructType {
         @Override
         public int getByteSize() {
             return 4;
+        }
+
+        @Override
+        public void set(float... values) {
+            x = values[0];
+            y = values[1];
+            z = values[2];
+            w = values[3];
+        }
+
+        @Override
+        public float[] getArray() {
+            return new float[]{x, y, z, w};
         }
     }
 

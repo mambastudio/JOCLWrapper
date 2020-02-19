@@ -52,6 +52,12 @@ public class CKernel extends CObject implements CResource
         return this;
     }
     
+    public CKernel resetPutArgs(CMemory<?>... values)
+    {
+        argIndex = 0;
+        return putArgs(values);
+    }
+    
     public CKernel putSVMArgs(CSVMBuffer... buffers)
     {
         for(CSVMBuffer buffer : buffers)
