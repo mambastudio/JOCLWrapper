@@ -5,6 +5,7 @@
  */
 package wrapper.core;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,20 @@ public class CPlatform  extends CObject
                 );      
     }
     
+    public String getInfo(int paramName)
+    {
+        // Obtain the length of the string that will be queried
+        long size[] = new long[1];
+        clGetPlatformInfo(getId(), paramName, 0, null, size);
+
+        // Create a buffer of the appropriate size and fill it with the info
+        byte buffer[] = new byte[(int)size[0]];
+        clGetPlatformInfo(getId(), paramName, buffer.length, Pointer.to(buffer), null);
+
+        // Create a string from the buffer (excluding the trailing \0 byte)
+        return new String(buffer, 0, buffer.length-1);
+    }
+   
     public static CPlatform getFirst() 
     {
         return getPlatforms().stream().findFirst().orElse(null);
@@ -61,6 +76,19 @@ public class CPlatform  extends CObject
         final int numPlatformsArray[] = new int[1];
         clGetPlatformIDs(0, null, numPlatformsArray);
         return numPlatformsArray[0];
+    }
+    
+    public ArrayList<CDevice> getAllDevices()
+    {
+        ArrayList<CDevice> devices = new ArrayList<>();
+        for(cl_device_id device_id : device_ids)
+            devices.add(new CDevice(device_id));
+        return devices;
+    }
+    
+    public cl_device_id[] getAllDevicesIDs()
+    {
+        return device_ids;
     }
     
     public CDevice getDefaultDevice()

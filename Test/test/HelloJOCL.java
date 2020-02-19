@@ -7,6 +7,11 @@ package test;
 
 import java.util.Arrays;
 import java.util.Random;
+import org.jocl.CL;
+import static org.jocl.CL.CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE;
+import static org.jocl.CL.CL_KERNEL_WORK_GROUP_SIZE;
+import org.jocl.Pointer;
+import org.jocl.Sizeof;
 import wrapper.core.CBufferFactory;
 import wrapper.core.CCommandQueue;
 import wrapper.core.CConfiguration;
@@ -31,7 +36,7 @@ public class HelloJOCL {
         CPlatform platform = CConfiguration.getDefault();
         CDevice device = platform.getDefaultDevice();        
         CContext context = platform.createContext(device);
-        CProgram program = context.createProgram(CLFileReader.readFile("C:\\Users\\user\\Documents\\Java\\jocl\\cl", "HelloCL.cl"));
+        CProgram program = context.createProgram(CLFileReader.readFile(HelloJOCL.class, "HelloCL.cl"));
         CCommandQueue queue = context.createCommandQueue(device);
         
         int globalSize = 10;
@@ -54,6 +59,12 @@ public class HelloJOCL {
         
         CKernel vectorAdd = program.createKernel("VectorAdd");
         vectorAdd.putArgs(aBuffer, bBuffer, cBuffer);
+        
+        final long workGroupSize[] = new long[1];        
+        Pointer workGroupSizePointer = Pointer.to(workGroupSize);
+        CL.clGetKernelWorkGroupInfo(vectorAdd.getId(), device.getId(), CL_KERNEL_PREFERRED_WORK_GROUP_SIZE_MULTIPLE, Sizeof.cl_long, workGroupSizePointer, workGroupSize);
+        
+        System.out.println(workGroupSize[0]);
         
         queue.put1DRangeKernel(vectorAdd, globalSize, globalSize);        
         

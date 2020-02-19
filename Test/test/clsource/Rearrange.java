@@ -31,7 +31,7 @@ public class Rearrange {
         CIntBuffer values0       = configuration.allocInt("values0", globalSize, READ_WRITE);
         CIntBuffer values1       = configuration.allocInt("values1", globalSize, READ_WRITE);
         CIntBuffer insertIndex0  = configuration.allocIntValue("insertIndex0", 0, READ_WRITE);
-        CIntBuffer insertIndex1  = configuration.allocIntValue("insertIndex1", 0, READ_WRITE);
+        CIntBuffer insertIndex1  = configuration.allocIntValue("insertIndex1", 0, READ_WRITE); 
         
         CKernel sortBitKernel    = configuration.createKernel("sortbit", values, values0, values1, insertIndex0, insertIndex1); 
         CKernel insertBitKernel  = configuration.createKernel("concatenate", values, values0, values1, insertIndex0, insertIndex1);

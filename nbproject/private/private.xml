@@ -2,12 +2,16 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/buffer/CFloatBuffer.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/scan/ScanTest.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/CBufferMemory.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/scan/CFloatScan.java</file>
-        </group>
         <group/>
+        <group>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/scan/StreamScan.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/clsource/Rearrange.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/scan/ScanTest.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/HelloJOCL.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/CBufferMemory.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/buffer/local/CLocalBuffer.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/Test/test/sort/ButterflySortGPU.java</file>
+            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/CKernel.java</file>
+        </group>
     </open-files>
 </project-private>
