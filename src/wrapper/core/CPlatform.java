@@ -107,7 +107,6 @@ public class CPlatform  extends CObject
         return numPlatformsArray[0];
     }
     
-<<<<<<< HEAD
     public ArrayList<CDevice> getAllDevices()
     {
         ArrayList<CDevice> devices = new ArrayList<>();
@@ -119,7 +118,7 @@ public class CPlatform  extends CObject
     public cl_device_id[] getAllDevicesIDs()
     {
         return device_ids;
-=======
+    }
     public List<CDevice> getDevices()
     {
         return devices;
@@ -155,7 +154,6 @@ public class CPlatform  extends CObject
             gpuDevices.add(device);
         });
         return gpuDevices;
->>>>>>> b459a896fc39f93a260df5ca672038ef50dd07f6
     }
     
     public CDevice getDefaultDevice()
