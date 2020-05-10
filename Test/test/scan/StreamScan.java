@@ -22,7 +22,7 @@ import wrapper.util.CLFileReader;
 public class StreamScan {
     public static void main(String... args)
     {
-        int globalSize = 16;
+        int globalSize = 24;
         int localSize = 8;
         
         CL.setExceptionsEnabled(true);

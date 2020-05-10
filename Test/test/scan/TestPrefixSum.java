@@ -29,7 +29,7 @@ public class TestPrefixSum {
         CL.setExceptionsEnabled(true);       
         OpenCLPlatform configuration = OpenCLPlatform.getDefault(CLSource.readFiles());
         
-        int length                  = 10;                         
+        int length                  = 1000;                         
         CFloatBuffer floatBuffer    = configuration.allocFloat("floatBuffer", length, READ_WRITE);
         CIntBuffer total            = configuration.allocIntValue("total", 0, READ_WRITE);
         

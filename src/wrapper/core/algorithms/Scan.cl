@@ -52,7 +52,7 @@ __kernel void  blelloch_scan_g(global int* data,
      // upsweep
      for ( uint stride = group_size >> 1 ; stride> 0 ; stride >>= 1 )
      {
-          barrier (CLK_LOCAL_MEM_FENCE);
+         // barrier (CLK_LOCAL_MEM_FENCE);
   
           if (local_id <stride)
           {
@@ -75,7 +75,7 @@ __kernel void  blelloch_scan_g(global int* data,
      for (uint stride = 1 ; stride <group_size; stride <<= 1 ) {
 
         depth >>= 1 ;
-        barrier (CLK_LOCAL_MEM_FENCE);
+     //   barrier (CLK_LOCAL_MEM_FENCE);
 
         if (local_id <stride) {
             uint i = depth * (2 * local_id + 1 ) - 1 ;
@@ -87,7 +87,7 @@ __kernel void  blelloch_scan_g(global int* data,
         }
     }
 
-    barrier (CLK_LOCAL_MEM_FENCE);
+   // barrier (CLK_LOCAL_MEM_FENCE);
     setOutput(global_id, temp[local_id]);
 }
 
@@ -108,8 +108,8 @@ __kernel void  blelloch_scan(global int* data,
      // upsweep   
      for ( uint stride = group_size >> 1 ; stride> 0 ; stride >>= 1 )
      {
-          barrier (CLK_LOCAL_MEM_FENCE);
-  
+    //      barrier (CLK_LOCAL_MEM_FENCE);
+
           if (local_id <stride) 
           {
               uint i = depth * ( 2 * local_id + 1 ) - 1 ;
@@ -128,7 +128,7 @@ __kernel void  blelloch_scan(global int* data,
      for (uint stride = 1 ; stride <group_size; stride <<= 1 ) {
 
         depth >>= 1 ;
-        barrier (CLK_LOCAL_MEM_FENCE);
+     //   barrier (CLK_LOCAL_MEM_FENCE);
 
         if (local_id <stride) {
             uint i = depth * (2 * local_id + 1 ) - 1 ;
@@ -140,7 +140,7 @@ __kernel void  blelloch_scan(global int* data,
         }
     }
 
-    barrier (CLK_LOCAL_MEM_FENCE);
+   // barrier (CLK_LOCAL_MEM_FENCE);
 
     setOutput(global_id, temp[local_id]);
 }

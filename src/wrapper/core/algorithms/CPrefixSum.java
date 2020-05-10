@@ -22,7 +22,7 @@ public class CPrefixSum {
     
     private int size;
     
-    private final int LOCALSIZECONSTANT = 16;
+    private final int LOCALSIZECONSTANT = 256;
     
     private CIntBuffer total = null;
     private CIntBuffer array_size = null;

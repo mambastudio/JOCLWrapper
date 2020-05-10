@@ -29,7 +29,7 @@ public class CPUCompact {
         
         Random r = new Random();
         for(int i = 0; i<predicate.length; i++)
-            predicate[i] = r.ints(GLOBALSIZE, 1, 2).limit(1).findFirst().getAsInt();        
+            predicate[i] = r.ints(GLOBALSIZE, 0, 2).limit(1).findFirst().getAsInt();        
         System.out.println(Arrays.toString(predicate));
         
         //phase1        

@@ -27,8 +27,8 @@ public class ButterflySortGPU {
         CL.setExceptionsEnabled(true);
         OpenCLPlatform configuration = OpenCLPlatform.getDefault(CLFileReader.readFile(ButterflySortGPU.class, "ButterflySort.cl"));
         
-        int data[] = new Random().ints(1000, 0, 50).toArray();  //size, range (i, j)
-        System.out.println(Arrays.toString(data));
+        int data[] = new Random().ints(3, 0, 1000).toArray();  //size, range (i, j)
+        //System.out.println(Arrays.toString(data));
                         
         CIntBuffer cdata   = configuration.createFromIntArray("data", READ_WRITE, data); 
         CIntBuffer clength = configuration.allocIntValue("lengthSize", data.length, READ_ONLY);
@@ -47,11 +47,13 @@ public class ButterflySortGPU {
         
         System.out.println(T);
         int globalSize = T;
-        int localSize = 256;
+        int localSize = globalSize<256 ? globalSize : 256;
         
         //kernel initialization
         CKernel cbutterfly1    = configuration.createKernel("butterfly1", cdata, clength, cpowerx);
         CKernel cbutterfly2    = configuration.createKernel("butterfly2", cdata, clength, cpowerx);
+        
+        long time1 = System.nanoTime();
         
         for(int xout = 1; xout<=until; xout++)
         {     
@@ -72,10 +74,15 @@ public class ButterflySortGPU {
                 }
             }
         }
+        long time2 = System.nanoTime();
         configuration.readFromDevice(cdata);
         System.out.println(Arrays.toString(cdata.getBuffer().array()));
         
         CResourceFactory.releaseAll();
+        
+        
+        double mTime = (double)(time2 - time1)/1_000_000_000;
+        System.out.printf("%.12f \n", mTime);
     }
     
     public static int log2( int bits ) // returns 0 for bits=0
