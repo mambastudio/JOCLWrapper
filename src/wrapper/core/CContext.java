@@ -5,8 +5,6 @@
  */
 package wrapper.core;
 
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import static org.jocl.CL.CL_SUCCESS;
 import static org.jocl.CL.clBuildProgram;
@@ -18,8 +16,6 @@ import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
 import org.jocl.cl_program;
-import wrapper.core.buffer.CFloatBuffer;
-import wrapper.core.buffer.CIntBuffer;
 
 /**
  *
