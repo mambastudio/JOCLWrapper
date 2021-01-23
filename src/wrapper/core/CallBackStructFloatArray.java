@@ -5,8 +5,8 @@
  */
 package wrapper.core;
 
-import coordinate.struct.FloatStruct;
-import coordinate.struct.StructFloatArray;
+import coordinate.struct.structfloat.FloatStruct;
+import coordinate.struct.structfloat.StructFloatArray;
 
 /**
  *

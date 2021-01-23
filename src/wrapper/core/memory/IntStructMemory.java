@@ -5,8 +5,8 @@
  */
 package wrapper.core.memory;
 
-import coordinate.struct.IntStruct;
-import coordinate.struct.StructIntArray;
+import coordinate.struct.structint.IntStruct;
+import coordinate.struct.structint.StructIntArray;
 import java.nio.Buffer;
 import org.jocl.Pointer;
 import org.jocl.cl_mem;

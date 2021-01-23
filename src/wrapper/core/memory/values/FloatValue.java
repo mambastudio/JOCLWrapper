@@ -5,7 +5,7 @@
  */
 package wrapper.core.memory.values;
 
-import coordinate.struct.FloatStruct;
+import coordinate.struct.structfloat.FloatStruct;
 
 /**
  *

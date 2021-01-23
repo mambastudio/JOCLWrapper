@@ -6,9 +6,8 @@
 
 
 import coordinate.generic.AbstractCoordinate;
-import coordinate.struct.ByteStruct;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import coordinate.generic.AbstractCoordinateFloat;
+import coordinate.struct.structbyte.Structure;
 import wrapper.core.CKernel;
 import wrapper.core.CMemory;
 import static wrapper.core.CMemory.READ_WRITE;
@@ -39,17 +38,11 @@ public class HelloByteJOCL {
         });
     }
         
-    public static class Particle extends ByteStruct
+    public static class Particle extends Structure
     {        
         public Float4 position;
         public float mass;         
-                
-        public Particle()
-        {    
-            position = new Float4();
-            mass = 0;      
-        }
-        
+                        
        
         public void setMass(float mass)
         {
@@ -58,38 +51,7 @@ public class HelloByteJOCL {
         }
                 
         
-        @Override
-        public void initFromGlobalArray() {            
-            
-            ByteBuffer buffer = this.getLocalByteBuffer(ByteOrder.nativeOrder());
-            int[] offsets = this.getOffsets();
-            int pos = buffer.position();
-            
-            buffer.position(pos + offsets[0]); 
-            position.x  =   buffer.getFloat();
-            position.y  =   buffer.getFloat();
-            position.z  =   buffer.getFloat();
-            
-            buffer.position(pos + offsets[1]);
-            mass        =  buffer.getFloat();     
-        }
-
-        @Override
-        public byte[] getArray() {            
-            ByteBuffer buffer = this.getEmptyLocalByteBuffer(ByteOrder.nativeOrder());
-            int offsets[] = this.getOffsets();
-            int pos = buffer.position();
-            
-            buffer.position(pos + offsets[0]);             
-            buffer.putFloat(position.x);
-            buffer.putFloat(position.y);
-            buffer.putFloat(position.z);
-            
-            buffer.position(pos + offsets[1]);
-            buffer.putFloat(mass);
-            
-            return buffer.array();
-        }
+       
         
         @Override
         public String toString()
@@ -99,14 +61,13 @@ public class HelloByteJOCL {
 
     }
     
-    public static class Float4 implements AbstractCoordinate
+    public static class Float4 implements AbstractCoordinateFloat
     {
         public float x, y, z, w;
-        
+
         @Override
-        public String toString()
-        {
-            return "x " +x+ " y " +y+ " z " +z;
+        public String toString() {
+            return "x " + x + " y " + y + " z " + z;
         }
 
         @Override
@@ -117,6 +78,19 @@ public class HelloByteJOCL {
         @Override
         public int getByteSize() {
             return 4;
+        }
+
+        @Override
+        public void set(float... values) {
+            x = values[0];
+            y = values[1];
+            z = values[2];
+            w = values[3];
+        }
+
+        @Override
+        public float[] getArray() {
+            return new float[]{x, y, z, w};
         }
     }
     
@@ -133,7 +107,7 @@ public class HelloByteJOCL {
         "{"+ "\n" +
         "    int gid = get_global_id(0);"+ "\n" +
         "    particles[gid].mass = gid * 2;"+
-        "    particles[gid].position = 3 * gid;" +
+        "    particles[gid].position = gid * 3;" +
        // "    printf(\"%2d\\n\", gid);" +                   
         "}";
 }

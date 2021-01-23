@@ -5,9 +5,9 @@
  */
 package wrapper.core.memory;
 
+import coordinate.struct.structbyte.Structure;
+import coordinate.struct.structbyte.StructureArray;
 import wrapper.core.CMemory;
-import coordinate.struct.ByteStruct;
-import coordinate.struct.StructByteArray;
 import java.nio.Buffer;
 import org.jocl.Pointer;
 import org.jocl.cl_mem;
@@ -19,11 +19,11 @@ import wrapper.core.CallBackFunction;
  * @author user
  * @param <T>
  */
-public class ByteStructMemory<T extends ByteStruct> extends CMemory<T>  {
+public class ByteStructMemory<T extends Structure> extends CMemory<T>  {
     
-    StructByteArray<T> structArray;
+    StructureArray<T> structArray;
     
-    public ByteStructMemory(CCommandQueue queue, cl_mem memory, Class<T> clazz, StructByteArray<T> structArray, Buffer buffer, Pointer pointer, long cl_size) {
+    public ByteStructMemory(CCommandQueue queue, cl_mem memory, Class<T> clazz, StructureArray<T> structArray, Buffer buffer, Pointer pointer, long cl_size) {
         super(queue, memory, clazz, buffer, pointer, cl_size);
         this.structArray = structArray;
     }

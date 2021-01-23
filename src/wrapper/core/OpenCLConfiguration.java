@@ -5,18 +5,16 @@
  */
 package wrapper.core;
 
-import coordinate.struct.ByteStruct;
-import coordinate.struct.FloatStruct;
-import coordinate.struct.IntStruct;
-import coordinate.struct.StructByteArray;
-import coordinate.struct.StructFloatArray;
-import coordinate.struct.StructIntArray;
+import coordinate.struct.structbyte.Structure;
+import coordinate.struct.structbyte.StructureArray;
+import coordinate.struct.structfloat.FloatStruct;
+import coordinate.struct.structint.IntStruct;
+import coordinate.struct.structfloat.StructFloatArray;
+import coordinate.struct.structint.StructIntArray;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -220,12 +218,12 @@ public class OpenCLConfiguration {
         return null;
     }
     
-    public<T extends ByteStruct> CMemory<T> createBufferB(Class<T> clazz, int size, long flag)
+    public<T extends Structure> CMemory<T> createBufferB(Class<T> clazz, int size, long flag)
     {
-        if(ByteStruct.class.isAssignableFrom(clazz))
+        if(Structure.class.isAssignableFrom(clazz))
         {
             
-            StructByteArray<T> structArray = new StructByteArray(clazz, size);
+            StructureArray<T> structArray = new StructureArray(clazz, size);
             int byteArraySize = structArray.getByteArraySize();
             ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        
             Pointer pointer = Pointer.to(buffer); 
@@ -243,9 +241,9 @@ public class OpenCLConfiguration {
         return null;
     }
     
-    public<T extends ByteStruct> CMemory<T> createFromB(Class<T> clazz, StructByteArray<T> structArray, long flag)
+    public<T extends Structure> CMemory<T> createFromB(Class<T> clazz, StructureArray<T> structArray, long flag)
     {
-        if(ByteStruct.class.isAssignableFrom(clazz))
+        if(Structure.class.isAssignableFrom(clazz))
         {            
             int byteArraySize = structArray.getByteArraySize();
             ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        

@@ -5,7 +5,7 @@
  */
 package wrapper.core.memory.values;
 
-import coordinate.struct.IntStruct;
+import coordinate.struct.structint.IntStruct;
 
 /**
  *

@@ -5,8 +5,8 @@
  */
 package wrapper.core;
 
-import coordinate.struct.IntStruct;
-import coordinate.struct.StructIntArray;
+import coordinate.struct.structint.IntStruct;
+import coordinate.struct.structint.StructIntArray;
 
 /**
  *

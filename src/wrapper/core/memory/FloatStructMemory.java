@@ -7,8 +7,8 @@ package wrapper.core.memory;
 
 import wrapper.core.CMemory;
 import coordinate.struct.AbstractStruct;
-import coordinate.struct.FloatStruct;
-import coordinate.struct.StructFloatArray;
+import coordinate.struct.structfloat.FloatStruct;
+import coordinate.struct.structfloat.StructFloatArray;
 import java.nio.Buffer;
 import org.jocl.Pointer;
 import org.jocl.cl_mem;

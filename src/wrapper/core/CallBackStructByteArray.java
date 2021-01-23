@@ -5,14 +5,15 @@
  */
 package wrapper.core;
 
-import coordinate.struct.ByteStruct;
-import coordinate.struct.StructByteArray;
+import coordinate.struct.structbyte.Structure;
+import coordinate.struct.structbyte.StructureArray;
+
 
 /**
  *
  * @author user
  * @param <B>
  */
-public interface CallBackStructByteArray<B extends ByteStruct> {
-    public void call(StructByteArray<B> s);
+public interface CallBackStructByteArray<B extends Structure> {
+    public void call(StructureArray<B> s);
 }

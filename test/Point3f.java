@@ -26,7 +26,7 @@
 
 
 import coordinate.generic.SCoord;
-import coordinate.struct.FloatStruct;
+import coordinate.struct.structfloat.FloatStruct;
 
 /**
  *

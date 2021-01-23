@@ -6,7 +6,7 @@
 
 
 import coordinate.generic.AbstractCoordinateFloat;
-import coordinate.struct.ByteStruct;
+import coordinate.struct.structbyte.Structure;
 import wrapper.core.CKernel;
 import wrapper.core.CMemory;
 import static wrapper.core.CMemory.READ_WRITE;
@@ -50,23 +50,11 @@ public class HelloStructType {
         CResourceFactory.releaseAll();
     }
 
-    public static class Particle extends ByteStruct {
+    public static class Particle extends Structure {
 
         public Float4 position;
         public float mass;
         public Float4 velocity;
-
-        public Particle() {
-            mass = 0;
-            position = new Float4();
-            velocity = new Float4();
-        }
-        
-        public Particle(float mass, Float4 position, Float4 velocity) {
-            this.mass = mass;
-            this.position = position;
-            this.velocity = velocity;
-        }
 
         public void setMass(float mass) {
             this.mass = mass;
@@ -130,7 +118,7 @@ public class HelloStructType {
         }
     }
 
-    private static final String programSource
+    private static String programSource
             = // Definition of the Particle struct in the kernel
             "typedef struct" + "\n"
             + "{" + "\n"
@@ -142,7 +130,7 @@ public class HelloStructType {
             "__kernel void test(__global Particle *particles)" + "\n"
             + "{" + "\n"
             + "    int gid = get_global_id(0);" + "\n"
-            + "    particles[gid].mass     = gid;" + "\n"
+            + "    particles[gid].mass     = 56;" + "\n"
             + "    particles[gid].position  *= gid;" + "\n"
             + "    particles[gid].velocity  = gid;" + "\n"
             + "}";
