@@ -19,7 +19,7 @@ import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
-import wrapper.core.memory.ByteStructMemory;
+import wrapper.core.memory.StructureMemory;
 import wrapper.core.memory.FloatStructMemory;
 import static wrapper.core.CMemory.flagHasPointer;
 import static wrapper.core.CMemory.validateMemoryType;
@@ -234,7 +234,7 @@ public class OpenCLConfiguration {
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);
 
-            ByteStructMemory memory = new ByteStructMemory(queue, clMem, clazz, structArray, buffer, pointer, byteArraySize); 
+            StructureMemory memory = new StructureMemory(queue, clMem, clazz, structArray, buffer, pointer, byteArraySize); 
                         
             return memory;
         }
@@ -255,7 +255,7 @@ public class OpenCLConfiguration {
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);
 
-            ByteStructMemory memory = new ByteStructMemory(queue, clMem, clazz, structArray, buffer, pointer, byteArraySize); 
+            StructureMemory memory = new StructureMemory(queue, clMem, clazz, structArray, buffer, pointer, byteArraySize); 
             memory.transferToDevice();
             return memory;
         }

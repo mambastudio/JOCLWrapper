@@ -19,11 +19,11 @@ import wrapper.core.CallBackFunction;
  * @author user
  * @param <T>
  */
-public class ByteStructMemory<T extends Structure> extends CMemory<T>  {
+public class StructureMemory<T extends Structure> extends CMemory<T>  {
     
     StructureArray<T> structArray;
     
-    public ByteStructMemory(CCommandQueue queue, cl_mem memory, Class<T> clazz, StructureArray<T> structArray, Buffer buffer, Pointer pointer, long cl_size) {
+    public StructureMemory(CCommandQueue queue, cl_mem memory, Class<T> clazz, StructureArray<T> structArray, Buffer buffer, Pointer pointer, long cl_size) {
         super(queue, memory, clazz, buffer, pointer, cl_size);
         this.structArray = structArray;
     }
