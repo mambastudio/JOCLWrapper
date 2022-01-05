@@ -159,6 +159,7 @@ public class OpenCLConfiguration {
             
             IntStructMemory<T> memory = new IntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             return memory;
+           
         }
         return null;
     }
@@ -280,5 +281,10 @@ public class OpenCLConfiguration {
     public CCommandQueue finish()
     {
         return queue.finish();
+    }
+    
+    public CCommandQueue flush()
+    {
+        return queue.flush();
     }
 }

@@ -12,6 +12,7 @@ import static org.jocl.CL.clEnqueueNDRangeKernel;
 import static org.jocl.CL.clEnqueueReadBuffer;
 import static org.jocl.CL.clEnqueueWriteBuffer;
 import static org.jocl.CL.clFinish;
+import static org.jocl.CL.clFlush;
 import static org.jocl.CL.clReleaseCommandQueue;
 import org.jocl.cl_command_queue;
 
@@ -76,6 +77,12 @@ public class CCommandQueue extends CObject implements CResource
         clFinish(getId());
         return this;
     }
+     
+     public CCommandQueue flush()
+     {       
+        clFlush(getId());
+        return this;
+     }
 
     @Override
     public void release() {

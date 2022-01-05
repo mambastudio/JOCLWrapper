@@ -20,6 +20,7 @@ import wrapper.util.CLFileReader;
 public class Test {
     public static void main(String... args)
     {
+        
         CL.setExceptionsEnabled(true);
         //setup configuration
         OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(CLFileReader.readFile(ButterflySortGPU.class, "ButterflySort.cl"));

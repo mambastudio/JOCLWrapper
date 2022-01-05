@@ -2,13 +2,6 @@
 <project-private xmlns="http://www.netbeans.org/ns/project-private/1">
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
-        <group>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/memory/StructureMemory.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/test/HelloStructType.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/test/SimpleJOCL.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/src/wrapper/core/CMemory.java</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/test/SimpleJOCL.cl</file>
-            <file>file:/C:/Users/user/Documents/GitHub/JOCLWrapper/test/HelloJOCL.java</file>
-        </group>
+        <group/>
     </open-files>
 </project-private>

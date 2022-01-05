@@ -81,10 +81,10 @@ __kernel void butterfly2Integer(global int* data, global int* lengthSize, global
 /**
  *
  * @author user
- * @param <DataType>
+ * @param <D>
  */
 
-public class ButterflySortGPU<DataType>
+public class ButterflySortGPU<D>
 {
     private OpenCLConfiguration configuration = null;
     
@@ -92,9 +92,9 @@ public class ButterflySortGPU<DataType>
     private final CMemory<IntValue> clength;
     private final CMemory<FloatValue> cpowerx;
     
-    private final Class<DataType> clazz;
+    private final Class<D> clazz;
     
-    public ButterflySortGPU(OpenCLConfiguration configuration, Class<DataType> clazz, CMemory data)
+    public ButterflySortGPU(OpenCLConfiguration configuration, Class<D> clazz, CMemory data)
     {
         this.configuration = configuration;
         this.cdata = data;
