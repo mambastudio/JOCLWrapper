@@ -5,6 +5,7 @@
  */
 package wrapper.core;
 
+import java.io.File;
 import java.util.ArrayList;
 import static org.jocl.CL.CL_SUCCESS;
 import static org.jocl.CL.clBuildProgram;
@@ -16,6 +17,7 @@ import org.jocl.cl_context;
 import org.jocl.cl_context_properties;
 import org.jocl.cl_device_id;
 import org.jocl.cl_program;
+import wrapper.util.CLOptions;
 
 /**
  *
@@ -65,9 +67,21 @@ public class CContext extends CObject
     public CProgram createProgram(String... sources)
     {
         cl_program prog = clCreateProgramWithSource(getId(),
-                sources.length, sources, null, null);  
-        
+                sources.length, sources, null, null);          
         int build = clBuildProgram(prog, 0, null, null, null, null);
+        if(build != CL_SUCCESS)
+            System.out.println("program build not successful");        
+        
+        CProgram program = new CProgram(prog);
+        CResourceFactory.registerProgram("program", program);
+        return program;
+    }
+    
+    public CProgram createProgram(CLOptions options, String... sources)
+    {
+        cl_program prog = clCreateProgramWithSource(getId(),
+                sources.length, sources, null, null);          
+        int build = clBuildProgram(prog, 0, null, options.getOptions(), null, null);
         if(build != CL_SUCCESS)
             System.out.println("program build not successful");        
         

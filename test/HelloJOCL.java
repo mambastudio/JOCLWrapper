@@ -14,6 +14,7 @@ import static wrapper.core.CMemory.WRITE_ONLY;
 import wrapper.core.CResourceFactory;
 import wrapper.core.OpenCLConfiguration;
 import wrapper.util.CLFileReader;
+import wrapper.util.CLOptions;
 
 /**
  *
@@ -24,7 +25,8 @@ public class HelloJOCL {
     public static void main(String... args)
     {
         //setup configuration
-        OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(CLFileReader.readFile(HelloJOCL.class, "HelloCL.cl"));
+        CLOptions options = CLOptions.include("test"); //#include
+        OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(options, CLFileReader.readFile(HelloJOCL.class, "HelloCL.cl"));
        
         //global size
         int globalSize = 10;

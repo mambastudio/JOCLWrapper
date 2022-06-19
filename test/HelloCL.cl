@@ -1,4 +1,4 @@
-enum bsdf_type {DIFFUSE, EMITTER};
+#include <Basic.h>
 
 
 __kernel void VectorAdd(global float* a, global float* b, global float* c)

@@ -25,6 +25,7 @@ import static wrapper.core.CMemory.flagHasPointer;
 import static wrapper.core.CMemory.validateMemoryType;
 import static wrapper.core.CDevice.DeviceType.GPU;
 import wrapper.core.memory.IntStructMemory;
+import wrapper.util.CLOptions;
 
 /**
  *
@@ -47,6 +48,20 @@ public class OpenCLConfiguration {
         configuration.device = configuration.platform.getDeviceGPU();
         configuration.context = configuration.platform.createContext(configuration.device);
         configuration.program = configuration.context.createProgram(sources);
+        configuration.queue = configuration.context.createCommandQueue(configuration.device);
+        return configuration;
+    }
+    
+    public static OpenCLConfiguration getDefault(CLOptions options, String... sources)
+    {
+        // Enable exceptions and subsequently omit error checks in this sample
+        CL.setExceptionsEnabled(true);
+        
+        OpenCLConfiguration configuration = new OpenCLConfiguration();        
+        configuration.platform = CPlatform.getFastestPlatform(GPU);
+        configuration.device = configuration.platform.getDeviceGPU();
+        configuration.context = configuration.platform.createContext(configuration.device);
+        configuration.program = configuration.context.createProgram(options, sources);
         configuration.queue = configuration.context.createCommandQueue(configuration.device);
         return configuration;
     }
@@ -222,8 +237,7 @@ public class OpenCLConfiguration {
     public<T extends Structure> CMemory<T> createBufferB(Class<T> clazz, int size, long flag)
     {
         if(Structure.class.isAssignableFrom(clazz))
-        {
-            
+        {            
             StructureArray<T> structArray = new StructureArray(clazz, size);
             int byteArraySize = structArray.getByteArraySize();
             ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        
