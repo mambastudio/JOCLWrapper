@@ -5,6 +5,7 @@
  */
 package struct;
 
+import coordinate.struct.cache.StructBufferCache;
 import org.jocl.CL;
 import wrapper.core.CKernel;
 import wrapper.core.CMemory;
@@ -27,7 +28,7 @@ public class TestStruct {
         //setup configuration
         OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(new String[]{stringBuilder.toString()});
     
-        CMemory<SimpleStruct> simpleStruct = configuration.createBufferB(SimpleStruct.class, 1, READ_WRITE);
+        CMemory<SimpleStruct> simpleStruct = configuration.createBufferB(SimpleStruct.class, StructBufferCache.class, 1, READ_WRITE);
         
         simpleStruct.mapReadMemory(structCL->{
             SimpleStruct struct = structCL.get(0);

@@ -6,14 +6,14 @@
 package struct;
 
 import coordinate.struct.annotation.arraysize;
-import coordinate.struct.structbyte.Structure;
+import coordinate.struct.structbyte.StructBufferMemory;
 import java.util.Arrays;
 
 /**
  *
  * @author user
  */
-public class SimpleStruct extends Structure
+public class SimpleStruct extends StructBufferMemory
 {
     public int n;    
     @arraysize(5)

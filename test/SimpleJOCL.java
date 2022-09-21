@@ -7,7 +7,8 @@
 
 import coordinate.generic.AbstractCoordinateFloat;
 import coordinate.struct.annotation.arraysize;
-import coordinate.struct.structbyte.Structure;
+import coordinate.struct.cache.StructBufferCache;
+import coordinate.struct.structbyte.StructBufferMemory;
 import java.util.Arrays;
 import wrapper.core.OpenCLConfiguration;
 import wrapper.core.CMemory;
@@ -27,11 +28,12 @@ public class SimpleJOCL {
                 
         //init memory
         
-        CMemory<Particle> particle =  configuration.createBufferB(Particle.class, 1, READ_WRITE); 
+        CMemory<Particle> particle =  configuration.createBufferB(Particle.class, StructBufferCache.class, 1, READ_WRITE); 
         
         Particle part = new Particle();
         part.setMass(80);
         part.setCharge(20);
+        
         //set to opencl memory
         particle.setCL(part);
         
@@ -50,7 +52,7 @@ public class SimpleJOCL {
         
     }
     
-    public static class Particle extends Structure {
+    public static class Particle extends StructBufferMemory {
         public float mass;
         public Float4 position;    
         public Atom atom;
@@ -61,26 +63,26 @@ public class SimpleJOCL {
         
         public void setCharge(int charge) {
             this.atom.charge = charge;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
 
         public void setMass(float mass) {
             this.mass = mass;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
 
         public void setPosition(float x, float y, float z) {
             position.x = x;
             position.y = y;
             position.z = z;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
 
         public void setVelocity(float x, float y, float z) {
             velocity.x = x;
             velocity.y = y;
             velocity.z = z;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
        
         @Override
@@ -94,7 +96,7 @@ public class SimpleJOCL {
 
     }
     
-    public static class Atom extends Structure
+    public static class Atom extends StructBufferMemory
     {
         public int charge;
     }

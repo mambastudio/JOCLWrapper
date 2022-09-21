@@ -52,17 +52,13 @@ public class HybridCompact {
         CKernel setPredicateKernel          = configuration.createKernel("SetPredicate", cinput, cpredicate, cactuallength);
         
         Random r = new Random();
-        cinput.mapWriteIterator(values->{     
-            
-            for(IntValue value : values)
-            {
-                int a = (r.ints(1, 0, 2).limit(1).findFirst().getAsInt());
-                int b = (r.ints(1, 1, 10).limit(1).findFirst().getAsInt());
-                value.set(a * b);
-                System.out.print(value.v +" ");
-            }           
-            System.out.println("");
-        });
+        cinput.loopWrite((value, index)->{ 
+            int a = (r.ints(1, 0, 2).limit(1).findFirst().getAsInt());
+            int b = (r.ints(1, 1, 10).limit(1).findFirst().getAsInt());
+            value.set(a * b);
+            System.out.print(value.v +" ");         
+        }); System.out.println();
+        
         
         //phase 1
         configuration.execute1DKernel(setPredicateKernel, GLOBALSIZE, 1);
@@ -76,11 +72,10 @@ public class HybridCompact {
         configuration.execute1DKernel(compactSIMDKernel, GLOBALSIZE, LOCALSIZE); 
         long time2 = System.nanoTime();
         
-        coutput.mapReadIterator(values->{
-            for(IntValue value : values)            
-                System.out.print(value.v +" ");                       
-            System.out.println("");
+        coutput.loopRead((value, i)->{
+            System.out.print(value.v +" ");
         });
+        
         System.out.println(ccompactlength.getCL().v);
                 
         double mTime = (double)(time2 - time1)/1_000_000_000;

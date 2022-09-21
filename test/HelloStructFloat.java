@@ -29,13 +29,13 @@ public class HelloStructFloat {
         //init kernel and execute
         CKernel kernel = configuration.createKernel("test", coordinatesBuffer);
         configuration.execute1DKernel(kernel, n, 1);
+        coordinatesBuffer.transferFromDevice();
         
-        //read output
-        coordinatesBuffer.mapReadIterator(coordinates -> {
-            for (Point3f coord : coordinates) {
-                System.out.println(coord);
-            }
-        });
+        for(int i = 0; i<n; i++)
+        {
+            System.out.println(coordinatesBuffer.get(i));
+        }
+        
 
         CResourceFactory.releaseAll();
     }

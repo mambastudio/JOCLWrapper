@@ -5,26 +5,25 @@
  */
 package wrapper.core;
 
-import coordinate.struct.structbyte.Structure;
-import coordinate.struct.structbyte.StructureArray;
+import coordinate.struct.StructAbstractCache;
+import coordinate.struct.StructAbstractMemory;
+import coordinate.struct.StructUtils;
 import coordinate.struct.structfloat.FloatStruct;
 import coordinate.struct.structint.IntStruct;
 import coordinate.struct.structfloat.StructFloatArray;
 import coordinate.struct.structint.StructIntArray;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_mem;
-import wrapper.core.memory.StructureMemory;
-import wrapper.core.memory.FloatStructMemory;
-import static wrapper.core.CMemory.flagHasPointer;
+import wrapper.core.memory.CStructureMemory;
+import wrapper.core.memory.CFloatStructMemory;
 import static wrapper.core.CMemory.validateMemoryType;
 import static wrapper.core.CDevice.DeviceType.GPU;
-import wrapper.core.memory.IntStructMemory;
+import wrapper.core.memory.CIntStructMemory;
 import wrapper.util.CLOptions;
 
 /**
@@ -86,12 +85,12 @@ public class OpenCLConfiguration {
             long clSize = Sizeof.cl_float * structArray.getArraySize(); 
             cl_mem clMem;
             
-            if(flagHasPointer(flag))
+            if(isFlagHostPtr(flag))
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
             
-            FloatStructMemory<T> memory = new FloatStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
+            CFloatStructMemory<T> memory = new CFloatStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             return memory;
         }
         return null;
@@ -113,12 +112,12 @@ public class OpenCLConfiguration {
             long clSize = Sizeof.cl_float * structArray.getArraySize(); 
             cl_mem clMem;
             
-            if(flagHasPointer(flag))
+            if(isFlagHostPtr(flag))
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
             
-            FloatStructMemory<T> memory = new FloatStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
+            CFloatStructMemory<T> memory = new CFloatStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             memory.transferToDevice();
             return memory;
         }
@@ -140,12 +139,12 @@ public class OpenCLConfiguration {
             long clSize = Sizeof.cl_float * structArray.getArraySize(); 
             cl_mem clMem;
             
-            if(flagHasPointer(flag))
+            if(isFlagHostPtr(flag))
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
             
-            FloatStructMemory<T> memory = new FloatStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
+            CFloatStructMemory<T> memory = new CFloatStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             memory.transferToDevice();
             return memory;
         }
@@ -167,12 +166,12 @@ public class OpenCLConfiguration {
             long clSize = Sizeof.cl_int * structArray.getArraySize(); 
             cl_mem clMem;
             
-            if(flagHasPointer(flag))
+            if(isFlagHostPtr(flag))
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
             
-            IntStructMemory<T> memory = new IntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
+            CIntStructMemory<T> memory = new CIntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             return memory;
            
         }
@@ -195,12 +194,12 @@ public class OpenCLConfiguration {
             long clSize = Sizeof.cl_int * structArray.getArraySize(); 
             cl_mem clMem;
             
-            if(flagHasPointer(flag))
+            if(isFlagHostPtr(flag))
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
             
-            IntStructMemory<T> memory = new IntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
+            CIntStructMemory<T> memory = new CIntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             memory.transferToDevice();
             return memory;
         }
@@ -222,56 +221,38 @@ public class OpenCLConfiguration {
             long clSize = Sizeof.cl_int * structArray.getArraySize(); 
             cl_mem clMem;
             
-            if(flagHasPointer(flag))
+            if(isFlagHostPtr(flag))
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
             else
                 clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
             
-            IntStructMemory<T> memory = new IntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
+            CIntStructMemory<T> memory = new CIntStructMemory(queue, clMem, clazz, structArray, buffer, pointer, clSize);
             memory.transferToDevice();
             return memory;
         }
         return null;
     }
     
-    public<T extends Structure> CMemory<T> createBufferB(Class<T> clazz, int size, long flag)
+    public<T extends StructAbstractMemory<GlobalBuffer>, GlobalBuffer, CacheType extends StructAbstractCache<T, GlobalBuffer>> CMemory<T> 
+        createBufferB(Class<T> clazzStruct, Class<CacheType> clazzCache, long size, long flag)
     {
-        if(Structure.class.isAssignableFrom(clazz))
-        {            
-            StructureArray<T> structArray = new StructureArray(clazz, size);
-            int byteArraySize = structArray.getByteArraySize();
-            ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        
-            Pointer pointer = Pointer.to(buffer); 
+        StructAbstractCache<T, GlobalBuffer> structArray = StructUtils.createStructCache(clazzStruct, clazzCache, size);
+        if(structArray != null)
+        {                        
+            long byteArraySize = structArray.getByteBufferSize();            
+            ByteBuffer buffer = structArray.getByteBuffer();
+            buffer.clear();
+            
+            Pointer pointer = Pointer.to(buffer);      
 
             cl_mem clMem;
-            if(flagHasPointer(flag))
-                clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, pointer, null);        
+            if(isFlagHostPtr(flag))
+                clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, pointer, null);     
             else
-                clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);
-
-            StructureMemory memory = new StructureMemory(queue, clMem, clazz, structArray, buffer, pointer, byteArraySize); 
+                clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);  
+            
+            CStructureMemory memory = new CStructureMemory(queue, clMem, clazzCache, structArray, buffer, pointer, byteArraySize, flag); 
                         
-            return memory;
-        }
-        return null;
-    }
-    
-    public<T extends Structure> CMemory<T> createFromB(Class<T> clazz, StructureArray<T> structArray, long flag)
-    {
-        if(Structure.class.isAssignableFrom(clazz))
-        {            
-            int byteArraySize = structArray.getByteArraySize();
-            ByteBuffer buffer = ByteBuffer.wrap(structArray.getArray()).order(ByteOrder.nativeOrder());        
-            Pointer pointer = Pointer.to(buffer); 
-
-            cl_mem clMem;
-            if(flagHasPointer(flag))
-                clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, pointer, null);        
-            else
-                clMem = CL.clCreateBuffer(context.getId(), flag, byteArraySize, null, null);
-
-            StructureMemory memory = new StructureMemory(queue, clMem, clazz, structArray, buffer, pointer, byteArraySize); 
-            memory.transferToDevice();
             return memory;
         }
         return null;
@@ -300,5 +281,19 @@ public class OpenCLConfiguration {
     public CCommandQueue flush()
     {
         return queue.flush();
+    }
+    
+    private static boolean isFlagHostPtr(long value)
+    {
+        byte a = getBit(3, value); //CL_MEM_USE_HOST_PTR
+        byte b = getBit(4, value); //CL_MEM_ALLOC_HOST_PTR
+        byte c = getBit(5, value); //CL_MEM_COPY_HOST_PTR
+        return a == 1 || b == 1 || c == 1;
+    }
+    
+    //https://stackoverflow.com/questions/9354860/how-to-get-the-value-of-a-bit-at-a-certain-position-from-a-byte
+    private static byte getBit(int position, long ID)
+    {
+       return (byte) ((ID >> position) & 1);
     }
 }

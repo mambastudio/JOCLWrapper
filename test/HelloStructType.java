@@ -6,7 +6,8 @@
 
 
 import coordinate.generic.AbstractCoordinateFloat;
-import coordinate.struct.structbyte.Structure;
+import coordinate.struct.cache.StructBufferCache;
+import coordinate.struct.structbyte.StructBufferMemory;
 import wrapper.core.CKernel;
 import wrapper.core.CMemory;
 import static wrapper.core.CMemory.READ_WRITE;
@@ -27,30 +28,31 @@ public class HelloStructType {
         int n = 13;
 
         //write input
-        CMemory<Particle> particleBuffer = configuration.createBufferB(Particle.class, n, READ_WRITE);
+        CMemory<Particle> particleBuffer = configuration.createBufferB(Particle.class, StructBufferCache.class, n, READ_WRITE);
 
-        particleBuffer.mapWriteIterator(particles -> {
-            for (Particle particle : particles) {
-                particle.setPosition(1, 4, 3);
-            }
-        });
+        for(int i = 0; i<n; i++)
+        {
+            Particle particle = particleBuffer.get(i);
+            particle.setPosition(1, 4, 3);
+        }
+        particleBuffer.transferToDevice();
 
         //execute kernel
         CKernel kernel = configuration.createKernel("test", particleBuffer);     
-        configuration.execute1DKernel(kernel, n, 1);
-        
+        configuration.execute1DKernel(kernel, n, 1);        
+        particleBuffer.transferFromDevice();
         
         //read output
-        particleBuffer.mapReadIterator(particles -> {
-            for (Particle particle : particles) {
-                System.out.println(particle);
-            }
-        });
-
+        for(int i = 0; i<n; i++)
+        {
+            Particle particle = particleBuffer.get(i);
+            System.out.println(particle);
+        }
+        
         CResourceFactory.releaseAll();
     }
 
-    public static class Particle extends Structure {
+    public static class Particle extends StructBufferMemory {
 
         public Float4 position;
         public float mass;
@@ -58,21 +60,21 @@ public class HelloStructType {
 
         public void setMass(float mass) {
             this.mass = mass;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
 
         public void setPosition(float x, float y, float z) {
             position.x = x;
             position.y = y;
             position.z = z;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
 
         public void setVelocity(float x, float y, float z) {
             velocity.x = x;
             velocity.y = y;
             velocity.z = z;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
        
         @Override

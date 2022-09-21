@@ -5,11 +5,16 @@
  */
 package wrapper.core;
 
-import coordinate.struct.AbstractStruct;
+import coordinate.struct.Struct;
+import coordinate.unsafe.UnsafeUtils;
 import java.nio.Buffer;
+import java.nio.ByteBuffer;
+import java.util.function.BiConsumer;
+import static org.jocl.CL.CL_MEM_ALLOC_HOST_PTR;
 import static org.jocl.CL.CL_MEM_COPY_HOST_PTR;
 import static org.jocl.CL.CL_MEM_READ_ONLY;
 import static org.jocl.CL.CL_MEM_READ_WRITE;
+import static org.jocl.CL.CL_MEM_USE_HOST_PTR;
 import static org.jocl.CL.CL_MEM_WRITE_ONLY;
 import static org.jocl.CL.clReleaseMemObject;
 import org.jocl.Pointer;
@@ -20,7 +25,7 @@ import org.jocl.cl_mem;
  * @author user
  * @param <T>
  */
-public abstract class CMemory<T extends AbstractStruct> extends CObject {
+public abstract class CMemory<T extends Struct> extends CObject {
     
     protected final Buffer buffer;
     protected CCommandQueue queue;
@@ -37,8 +42,10 @@ public abstract class CMemory<T extends AbstractStruct> extends CObject {
         this.cl_size = cl_size;
     }
     
-    public abstract void mapReadIterator(CallBackFunction<Iterable<T>> function);
-    public abstract void mapWriteIterator(CallBackFunction<Iterable<T>> function);
+    public void cleanByteBuffer()
+    {
+        UnsafeUtils.clean(buffer);       
+    }
     
     public void mapReadMemory(CallBackFunction<CMemory<T>> function)
     {
@@ -61,20 +68,46 @@ public abstract class CMemory<T extends AbstractStruct> extends CObject {
     public abstract void index(int index, CallBackFunction<T> function);
     
     public void transferFromDevice()
+    {        
+        if(buffer != null)
+        {
+            buffer.clear(); //reset buffer to 0 position
+            buffer.rewind();
+            queue.putReadBuffer(this);
+            buffer.rewind(); //set read position to 0 but limit remain same 
+        }
+    }
+    
+    public void loopRead(BiConsumer<T, Integer> consume)
     {
-        buffer.clear(); //reset buffer to 0 position
-        buffer.rewind();
-        queue.putReadBuffer(this);
-        buffer.rewind(); //set read position to 0 but limit remain same
+        transferFromDevice();
+        for(int i = 0; i<getSize(); i++)
+        {
+            consume.accept(get(i), i);
+        }
     }
     
     public void transferToDevice()
-    {
-        buffer.clear(); //reset buffer       
-        buffer.rewind();  // set read position to 0 but limit remains same
-        queue.putWriteBuffer(this);
-        buffer.rewind();  
+    {        
+        if(buffer != null)
+        {
+            buffer.clear(); //reset buffer       
+            buffer.rewind();  // set read position to 0 but limit remains same
+            queue.putWriteBuffer(this);
+            buffer.rewind();
+        }        
     }
+    
+    public void loopWrite(BiConsumer<T, Integer> consume)
+    {        
+        for(int i = 0; i<getSize(); i++)
+        {
+            consume.accept(get(i), i);
+        }
+        transferToDevice();
+    }
+    
+    
     
     public Object getBufferArray()
     {
@@ -88,7 +121,7 @@ public abstract class CMemory<T extends AbstractStruct> extends CObject {
         return cl_size;
     }
     
-    public abstract int getSize();
+    public abstract long getSize();
     
     public boolean hasRemaining()
     {
@@ -133,15 +166,12 @@ public abstract class CMemory<T extends AbstractStruct> extends CObject {
                 flag == (READ_WRITE|COPY_HOST_PTR);  
     }
     
-    public static boolean flagHasPointer(long flag)
-    {
-        return !(flag == READ_ONLY || flag == WRITE_ONLY || flag == READ_WRITE);
-    }
-    
     public final static long READ_WRITE = CL_MEM_READ_WRITE;
     public final static long READ_ONLY = CL_MEM_READ_ONLY;
     public final static long WRITE_ONLY = CL_MEM_WRITE_ONLY;
     public final static long COPY_HOST_PTR = CL_MEM_COPY_HOST_PTR;
+    public final static long USE_HOST_PTR = CL_MEM_USE_HOST_PTR;
+    public final static long ALLOC_HOST_PTR = CL_MEM_ALLOC_HOST_PTR;
     
     public final static long READ_WRITE_COPY_PTR = READ_WRITE|COPY_HOST_PTR;
     public final static long READ_COPY_PTR = READ_ONLY|COPY_HOST_PTR;

@@ -5,9 +5,9 @@
  */
 
 
-import coordinate.generic.AbstractCoordinate;
 import coordinate.generic.AbstractCoordinateFloat;
-import coordinate.struct.structbyte.Structure;
+import coordinate.struct.cache.StructArrayCache;
+import coordinate.struct.structbyte.StructArrayMemory;
 import wrapper.core.CKernel;
 import wrapper.core.CMemory;
 import static wrapper.core.CMemory.READ_WRITE;
@@ -21,33 +21,35 @@ public class HelloByteJOCL {
     public static void main(String... args)
     {
         //setup configuration
-        OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(programSource);
+        OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(ProgramSource);
         
         int globalSize = 10;
         
-        CMemory<Particle> cbuffer = configuration.createBufferB(Particle.class, globalSize, READ_WRITE);
-        
+        CMemory<Particle> cbuffer = configuration.createBufferB(Particle.class, StructArrayCache.class, globalSize, READ_WRITE);
+                
         CKernel vectorAdd = configuration.createKernel("test", cbuffer);
         configuration.execute1DKernel(vectorAdd, globalSize, 1);
         
-        
-        cbuffer.mapReadIterator(values ->{   
-            for(Particle particle: values)
-                System.out.println(particle);
-            
-        });
+        cbuffer.loopRead((particle, index)->{
+            System.out.println(particle);
+        });                
     }
         
-    public static class Particle extends Structure
+    public static class Particle extends StructArrayMemory
     {        
         public Float4 position;
         public float mass;         
                         
+        public Particle()
+        {
+            position = new Float4();
+            mass = 0;
+        }
        
         public void setMass(float mass)
         {
             this.mass = mass;
-            this.refreshGlobalArray();
+            this.refreshGlobalBuffer();
         }
                 
         
@@ -56,7 +58,7 @@ public class HelloByteJOCL {
         @Override
         public String toString()
         {
-            return "mass " +mass+ " position " +position;
+            return "mass " +mass ;
         }        
 
     }
@@ -94,7 +96,7 @@ public class HelloByteJOCL {
         }
     }
     
-    private static final String programSource =
+    private static final String ProgramSource =
           
         "typedef struct" + "\n" +
         "{" + "\n" +              

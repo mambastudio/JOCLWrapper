@@ -101,7 +101,7 @@ public class ButterflySortGPU<D>
         this.clazz = clazz;
         
         clength = configuration.createBufferI(IntValue.class, 1, READ_ONLY);
-        clength.setCL(new IntValue(data.getSize()));
+        clength.setCL(new IntValue((int) data.getSize()));
         cpowerx = configuration.createBufferF(FloatValue.class, 1, READ_WRITE); 
         cpowerx.setCL(new FloatValue(0));
     }

@@ -35,16 +35,21 @@ public class HelloJOCL {
         CMemory<FloatValue> bBuffer = configuration.createBufferF(FloatValue.class, globalSize, READ_ONLY);
         CMemory<FloatValue> cBuffer = configuration.createBufferF(FloatValue.class, globalSize, WRITE_ONLY);  
         
-        aBuffer.mapWriteIterator(values -> {
-            Random rnd = new Random(System.currentTimeMillis());
-            for(FloatValue value : values)
-                value.set(rnd.nextFloat()*100);      
-        });        
-        bBuffer.mapWriteIterator(array -> {
-            Random rnd = new Random(System.currentTimeMillis());
-            for(FloatValue values : array)
-                values.set(rnd.nextFloat()*100);    
-        });
+        Random rnd = new Random(System.currentTimeMillis());
+        for(int i = 0; i<globalSize; i++)
+        {
+            FloatValue value = aBuffer.get(i);
+            value.set(rnd.nextFloat()*100);      
+        }
+        aBuffer.transferToDevice();
+                
+        for(int i = 0; i<globalSize; i++)
+        {
+            FloatValue value = bBuffer.get(i);
+            value.set(rnd.nextFloat()*100);      
+        }
+        bBuffer.transferToDevice();
+        
         
         
         //final long workGroupSize[] = new long[1];        
@@ -55,11 +60,15 @@ public class HelloJOCL {
         //execute kernel
         CKernel vectorAdd = configuration.createKernel("VectorAdd", aBuffer, bBuffer, cBuffer);
         configuration.execute1DKernel(vectorAdd, globalSize, globalSize);
+        cBuffer.transferFromDevice();
         
-        cBuffer.mapReadIterator(values->{
-            for(FloatValue value : values)
-                System.out.print(value.v+ " ");
-        });
+        for(int i = 0; i<globalSize; i++)
+        {
+            FloatValue value = cBuffer.get(i);
+            System.out.print(value.v+ " ");
+        }
+        
+        
                 
         CResourceFactory.releaseAll();
       

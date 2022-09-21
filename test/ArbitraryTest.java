@@ -1,4 +1,6 @@
 
+import coordinate.struct.StructAbstract;
+import coordinate.struct.annotation.arraysize;
 import org.jocl.struct.ArrayLength;
 import org.jocl.struct.CLTypes.cl_float4;
 import org.jocl.struct.Struct;
@@ -20,25 +22,22 @@ public class ArbitraryTest {
     {
         Struct.showLayout(Struct1.class);
         
+        Struct2 s = new Struct2();
+        System.out.println(s.getLayout());
     }
     
     
     public static class Struct1 extends Struct
     {
         public float f;
-        public char  c;
-        
-        @ArrayLength(2)
-        public float[] array2; 
-        
-        public Struct2 struct;
-        public Struct2 struct1;
+        public long  c;
+           
     }
     
-    public static class Struct2 extends Struct
+    public static class Struct2 extends StructAbstract
     {
-        public long d;
         public float f;
-        public char  c;
+        public long  c;
+         
     }
 }

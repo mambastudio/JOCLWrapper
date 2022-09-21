@@ -27,25 +27,19 @@ public class Test {
              
         //init random values
         CMemory<IntValue> cdata   = configuration.createBufferI(IntValue.class, 115, READ_WRITE); 
-        cdata.mapWriteIterator(values -> {
-            Random random = new Random();
-            for(IntValue value : values)
-            {
-                value.set(random.nextInt(10));
-                System.out.print(value.v + " ");
-            }
-            System.out.println();
-        });
+        Random random = new Random();
+        cdata.loopWrite((value, index) -> {
+            value.set(random.nextInt(10));
+            System.out.print(value.v + " ");
+        });System.out.println();
         
         //sort
         ButterflySortGPU butterfly = new ButterflySortGPU(configuration, Integer.class, cdata);        
         butterfly.sortThenDeviceToBuffer();
         
         //read sorted values
-        cdata.mapReadIterator(values -> {            
-            for(IntValue value : values)                          
-                System.out.print(value.v + " ");            
-            System.out.println();
-        });
+        cdata.loopRead((value, index) -> {                             
+            System.out.print(value.v + " ");            
+        }); System.out.println();
     }
 }

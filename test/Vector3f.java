@@ -167,6 +167,7 @@ public class Vector3f implements VCoord<Vector3f>
         }
     }
 
+    @Override
     public void set(char axis, float value) {
         switch (axis) {
             case 'x':

@@ -11,7 +11,7 @@ import static org.jocl.CL.clSetKernelArgSVMPointer;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
 import org.jocl.cl_kernel;
-import wrapper.core.memory.LocalMemory;
+import wrapper.core.memory.CLocalMemory;
 
 /**
  *
@@ -42,7 +42,7 @@ public class CKernel extends CObject implements CResource
     
     public CKernel putArg(int index, CMemory<?> value)
     {
-        if(value instanceof LocalMemory)
+        if(value instanceof CLocalMemory)
             clSetKernelArg(getId(), index, value.getCLSize(), null); 
         else
             clSetKernelArg(getId(), index, Sizeof.cl_mem, Pointer.to(value.getId()));
@@ -53,7 +53,7 @@ public class CKernel extends CObject implements CResource
     {        
         for(CMemory value : values) 
         {            
-            if(value instanceof LocalMemory)
+            if(value instanceof CLocalMemory)
                 clSetKernelArg(getId(), argIndex++, value.getCLSize(), null); 
             else
                 clSetKernelArg(getId(), argIndex++, Sizeof.cl_mem, Pointer.to(value.getId()));
