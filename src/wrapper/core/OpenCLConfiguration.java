@@ -23,6 +23,7 @@ import wrapper.core.memory.CStructureMemory;
 import wrapper.core.memory.CFloatStructMemory;
 import static wrapper.core.CMemory.validateMemoryType;
 import static wrapper.core.CDevice.DeviceType.GPU;
+import wrapper.core.image.CImage;
 import wrapper.core.memory.CIntStructMemory;
 import wrapper.util.CLOptions;
 
@@ -256,6 +257,11 @@ public class OpenCLConfiguration {
             return memory;
         }
         return null;
+    } 
+        
+    public void writeImage(CImage image)
+    {
+        
     }
     
     public CKernel createKernel(String kernelName)
@@ -295,5 +301,10 @@ public class OpenCLConfiguration {
     private static byte getBit(int position, long ID)
     {
        return (byte) ((ID >> position) & 1);
+    }
+    
+    public CContext getContext()
+    {
+        return context;
     }
 }

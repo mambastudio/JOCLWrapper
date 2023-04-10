@@ -15,7 +15,7 @@ import java.util.Random;
 public class ButterflySortCPU {
     public static void main(String... args)
     {
-        int[] data = new Random().ints(16, 0, 90).toArray();//{7, 3, 2, 5, 6, 4, 0, 1};//new Random().ints(4, 0, 8).toArray();//{15, 33, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};//{7, 3, 2, 5, 6, 4, 0, 1}; //new Random().ints(32, 0, 90).toArray();
+        int[] data = new Random().ints(17, 0, 90).toArray();//{7, 3, 2, 5, 6, 4, 0, 1};//new Random().ints(4, 0, 8).toArray();//{15, 33, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0};//{7, 3, 2, 5, 6, 4, 0, 1}; //new Random().ints(32, 0, 90).toArray();
             
         System.out.println(Arrays.toString(data));
         butterflySort(data);
@@ -48,7 +48,7 @@ public class ButterflySortCPU {
     public static void butterflySort(int[] data)
     {
         int radix  = 2;        
-        int until = until(data);
+        int until = until(data); 
         int T = (int) (Math.pow(radix, until)/radix);//data.length/radix if n is power of 2;
         double PowerX = 0;
         
