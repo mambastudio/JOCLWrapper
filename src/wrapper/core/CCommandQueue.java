@@ -38,11 +38,33 @@ public class CCommandQueue extends CObject implements CResource
         return this;
     }
     
+    public CCommandQueue putReadBuffer(CNativeMemory readBuffer)
+    {         
+        int state = clEnqueueReadBuffer(getId(), readBuffer.getId(), CL_TRUE,
+                0, readBuffer.size(), readBuffer.pointer(), 0, null, null);
+        
+        if(state != CL_SUCCESS)           
+            System.out.println("unable to read buffer successful");
+       
+        return this;
+    }
+    
     
     public CCommandQueue putWriteBuffer(CMemory writeBuffer)
     {
         int state = clEnqueueWriteBuffer(getId(), writeBuffer.getId(), true,
                 0, writeBuffer.getCLSize(), writeBuffer.getPointer(), 0, null, null);
+        
+        if(state != CL_SUCCESS)            
+            System.out.println("unable to write buffer successful");
+        
+        return this;
+    }
+    
+    public CCommandQueue putWriteBuffer(CNativeMemory writeBuffer)
+    {
+        int state = clEnqueueWriteBuffer(getId(), writeBuffer.getId(), true,
+                0, writeBuffer.size(), writeBuffer.pointer(), 0, null, null);
         
         if(state != CL_SUCCESS)            
             System.out.println("unable to write buffer successful");

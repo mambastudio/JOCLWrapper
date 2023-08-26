@@ -5,6 +5,8 @@
  */
 package wrapper.core;
 
+import coordinate.memory.MemoryAddress;
+import coordinate.memory.NativeInteger;
 import coordinate.struct.StructAbstractCache;
 import coordinate.struct.StructAbstractMemory;
 import coordinate.struct.StructUtils;
@@ -179,6 +181,24 @@ public class OpenCLConfiguration {
         return null;
     }
     
+    public<T extends MemoryAddress> CNativeMemory<T> createBufferNative(T value, long flag)
+    {        
+        //validate memory type for opencl
+        validateMemoryType(flag);
+
+         //buffer for pointer                    
+        Pointer pointer = Pointer.to(value.getDirectByteBufferPoint()); 
+        long clSize = value.capacity() * Sizeof.cl_int; 
+        cl_mem clMem;
+
+        if(isFlagHostPtr(flag))
+            clMem = CL.clCreateBuffer(context.getId(), flag, clSize, pointer, null);        
+        else
+            clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
+        
+        return new CNativeMemory(queue, clMem, value, pointer, clSize);
+    }
+    
     public<T extends IntStruct> CMemory<T> createValueI(Class<T> clazz, T t, long flag)
     {
         if(IntStruct.class.isAssignableFrom(clazz))
@@ -234,6 +254,7 @@ public class OpenCLConfiguration {
         return null;
     }
     
+    
     public<T extends StructAbstractMemory<GlobalBuffer>, GlobalBuffer, CacheType extends StructAbstractCache<T, GlobalBuffer>> CMemory<T> 
         createBufferB(Class<T> clazzStruct, Class<CacheType> clazzCache, long size, long flag)
     {
@@ -270,6 +291,11 @@ public class OpenCLConfiguration {
     }
     
     public CKernel createKernel(String kernelName, CMemory... memory)
+    {
+        return program.createKernel(kernelName, memory);
+    }
+    
+    public CKernel createKernel(String kernelName, CNativeMemory... memory)
     {
         return program.createKernel(kernelName, memory);
     }
