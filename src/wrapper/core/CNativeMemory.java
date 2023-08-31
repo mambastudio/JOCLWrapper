@@ -5,7 +5,7 @@
  */
 package wrapper.core;
 
-import coordinate.memory.MemoryAddress;
+import coordinate.memory.nativememory.MemoryAddress;
 import java.nio.Buffer;
 import java.util.function.Consumer;
 import static org.jocl.CL.CL_MEM_ALLOC_HOST_PTR;

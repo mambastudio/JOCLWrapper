@@ -5,8 +5,8 @@
  */
 package wrapper.core;
 
-import coordinate.memory.MemoryAddress;
-import coordinate.memory.NativeInteger;
+import coordinate.memory.nativememory.MemoryAddress;
+import coordinate.memory.nativememory.NativeInteger;
 import coordinate.struct.StructAbstractCache;
 import coordinate.struct.StructAbstractMemory;
 import coordinate.struct.StructUtils;

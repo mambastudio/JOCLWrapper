@@ -1,6 +1,6 @@
 package nativememory;
 
-import coordinate.memory.NativeFloat;
+import coordinate.memory.nativememory.NativeFloat;
 import static org.jocl.CL.*;
 
 import java.nio.*;

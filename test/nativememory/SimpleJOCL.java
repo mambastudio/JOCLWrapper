@@ -5,7 +5,7 @@
  */
 package nativememory;
 
-import coordinate.memory.NativeInteger;
+import coordinate.memory.nativememory.NativeInteger;
 import java.util.Random;
 import wrapper.core.CKernel;
 import wrapper.core.CNativeMemory;

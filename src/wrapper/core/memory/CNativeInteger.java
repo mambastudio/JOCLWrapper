@@ -5,7 +5,7 @@
  */
 package wrapper.core.memory;
 
-import coordinate.memory.NativeInteger;
+import coordinate.memory.nativememory.NativeInteger;
 import coordinate.struct.structint.IntStruct;
 import org.jocl.Pointer;
 import org.jocl.cl_mem;
