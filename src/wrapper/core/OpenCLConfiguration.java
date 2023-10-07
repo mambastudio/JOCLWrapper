@@ -7,6 +7,7 @@ package wrapper.core;
 
 import coordinate.memory.nativememory.MemoryAddress;
 import coordinate.memory.nativememory.NativeInteger;
+import coordinate.memory.type.MemoryStruct;
 import coordinate.struct.StructAbstractCache;
 import coordinate.struct.StructAbstractMemory;
 import coordinate.struct.StructUtils;
@@ -181,14 +182,14 @@ public class OpenCLConfiguration {
         return null;
     }
     
-    public<T extends MemoryAddress> CNativeMemory<T> createBufferNative(T value, long flag)
+    public<T extends MemoryStruct> CNativeMemory<T> createBufferNative(T value, long flag) 
     {        
         //validate memory type for opencl
         validateMemoryType(flag);
 
          //buffer for pointer                    
         Pointer pointer = Pointer.to(value.getDirectByteBufferPoint()); 
-        long clSize = value.capacity() * Sizeof.cl_int; 
+        long clSize = value.getMemory().byteCapacity(); 
         cl_mem clMem;
 
         if(isFlagHostPtr(flag))

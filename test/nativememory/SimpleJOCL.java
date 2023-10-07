@@ -6,6 +6,8 @@
 package nativememory;
 
 import coordinate.memory.nativememory.NativeInteger;
+import coordinate.memory.type.MemoryStruct;
+import coordinate.memory.type.MemoryStructFactory.Int32;
 import java.util.Random;
 import wrapper.core.CKernel;
 import wrapper.core.CNativeMemory;
@@ -26,18 +28,18 @@ public class SimpleJOCL {
         //global size
         int globalSize = 10;
         
-        NativeInteger srcA = new NativeInteger(globalSize);
-        NativeInteger srcB = new NativeInteger(globalSize);
-        NativeInteger dest = new NativeInteger(globalSize);
+        MemoryStruct<Int32> srcA = new MemoryStruct(new Int32(), globalSize);
+        MemoryStruct<Int32> srcB = new MemoryStruct(new Int32(), globalSize);
+        MemoryStruct<Int32> dest = new MemoryStruct(new Int32(), globalSize);
         
-        CNativeMemory<NativeInteger> nativeSrcA = configuration.createBufferNative(srcA, READ_ONLY);
-        CNativeMemory<NativeInteger> nativeSrcB = configuration.createBufferNative(srcB, READ_ONLY);
-        CNativeMemory<NativeInteger> nativeDest = configuration.createBufferNative(dest, WRITE_ONLY);
+        CNativeMemory<MemoryStruct<Int32>> nativeSrcA = configuration.createBufferNative(srcA, READ_ONLY);
+        CNativeMemory<MemoryStruct<Int32>> nativeSrcB = configuration.createBufferNative(srcB, READ_ONLY);
+        CNativeMemory<MemoryStruct<Int32>> nativeDest = configuration.createBufferNative(dest, WRITE_ONLY);
         
         Random rnd = new Random(System.currentTimeMillis());
                         
-        nativeSrcA.write(n -> n.iterateRange(i ->(int)i));
-        nativeSrcB.write(n -> n.iterateRange(i ->(int)i));
+        nativeSrcA.write(n -> n.forEachSet((t, i)-> new Int32((int)i))); 
+        nativeSrcB.write(n -> n.forEachSet((t, i) ->new Int32((int)i)));
        
         System.out.println(srcA);
         System.out.println(srcB);
@@ -48,7 +50,7 @@ public class SimpleJOCL {
         
         nativeDest.read(n -> System.out.println(n));
                 
-        nativeSrcA.write(n -> n.iterateRange(i-> rnd.nextInt(5)));   
+        nativeSrcA.write(n -> n.forEachSet((t, i) ->new Int32(rnd.nextInt(5))));   
         System.out.println(nativeSrcA.getT());
         
         configuration.execute1DKernel(vectorAdd, globalSize, globalSize);

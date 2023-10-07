@@ -5,8 +5,7 @@
  */
 package wrapper.core;
 
-import coordinate.memory.nativememory.MemoryAddress;
-import java.nio.Buffer;
+import coordinate.memory.type.MemoryStruct;
 import java.util.function.Consumer;
 import static org.jocl.CL.CL_MEM_ALLOC_HOST_PTR;
 import static org.jocl.CL.CL_MEM_COPY_HOST_PTR;
@@ -22,7 +21,7 @@ import org.jocl.cl_mem;
  * @author jmburu
  * @param <T>
  */
-public class CNativeMemory<T extends MemoryAddress> extends CObject {
+public class CNativeMemory<T extends MemoryStruct> extends CObject {
     
     protected final T data; 
     protected CCommandQueue queue;
