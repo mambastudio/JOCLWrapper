@@ -64,8 +64,11 @@ public class CKernel extends CObject implements CResource
     public CKernel putArgs(CNativeMemory<?>... values)
     {        
         for(CNativeMemory value : values) 
-        {            
-            clSetKernelArg(getId(), argIndex++, Sizeof.cl_mem, Pointer.to(value.getId()));
+        {       
+            if(value instanceof CNativeMemoryLocal)
+                clSetKernelArg(getId(), argIndex++, value.byteCapacity(), null); 
+            else
+                clSetKernelArg(getId(), argIndex++, Sizeof.cl_mem, Pointer.to(value.getId()));
         }        
         return this;
     }

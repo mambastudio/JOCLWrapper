@@ -23,19 +23,19 @@ import org.jocl.cl_mem;
  */
 public class CNativeMemory<T extends MemoryStruct> extends CObject {
     
-    protected final T data; 
+    protected final T array; 
     protected CCommandQueue queue;
     
-    protected long cl_size;
+    protected long cl_capacity;
     protected Pointer pointer;
     
-    public CNativeMemory(CCommandQueue queue, cl_mem memory, T data, Pointer pointer, long cl_size) {
+    public CNativeMemory(CCommandQueue queue, cl_mem memory, T array, Pointer pointer, long byteCapacity) {
         super(memory);
         
-        this.data = data;
+        this.array = array;
         this.queue = queue;
         this.pointer = pointer; 
-        this.cl_size = cl_size;
+        this.cl_capacity = byteCapacity;
     }
     
     public void transferFromDevice()
@@ -56,9 +56,14 @@ public class CNativeMemory<T extends MemoryStruct> extends CObject {
         return (cl_mem)super.getId();
     }
     
+    public long byteCapacity()
+    {
+        return cl_capacity;
+    }
+    
     public long size()
     {
-        return cl_size;
+        return array.size();
     }
     
     public Pointer pointer()
@@ -68,19 +73,19 @@ public class CNativeMemory<T extends MemoryStruct> extends CObject {
     
     public T getT()
     {
-        return data;
+        return array;
     }
     
     public void write(Consumer<T> consume)
     {
-        consume.accept(data);
+        consume.accept(array);
         transferToDevice();
     }
     
     public void read(Consumer<T> consume)
     {
         transferFromDevice();
-        consume.accept(data);
+        consume.accept(array);
     }
     
     public static boolean isValid(long flag)

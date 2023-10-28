@@ -161,9 +161,13 @@ public abstract class CMemory<T extends Struct> extends CObject {
         return  flag == READ_ONLY || 
                 flag == WRITE_ONLY || 
                 flag == READ_WRITE || 
+                flag == USE_HOST_PTR ||
                 flag == (READ_ONLY|COPY_HOST_PTR) || 
                 flag == (WRITE_ONLY|COPY_HOST_PTR) || 
-                flag == (READ_WRITE|COPY_HOST_PTR);  
+                flag == (READ_WRITE|COPY_HOST_PTR) ||
+                flag == (READ_ONLY|USE_HOST_PTR) || 
+                flag == (WRITE_ONLY|USE_HOST_PTR) || 
+                flag == (READ_WRITE|USE_HOST_PTR); 
     }
     
     public final static long READ_WRITE = CL_MEM_READ_WRITE;

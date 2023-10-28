@@ -8,6 +8,7 @@ package wrapper.core;
 import coordinate.memory.nativememory.MemoryAddress;
 import coordinate.memory.nativememory.NativeInteger;
 import coordinate.memory.type.MemoryStruct;
+import coordinate.memory.type.StructBase;
 import coordinate.struct.StructAbstractCache;
 import coordinate.struct.StructAbstractMemory;
 import coordinate.struct.StructUtils;
@@ -197,9 +198,14 @@ public class OpenCLConfiguration {
         else
             clMem = CL.clCreateBuffer(context.getId(), flag, clSize, null, null);
         
-        return new CNativeMemory(queue, clMem, value, pointer, clSize);
+        return new CNativeMemory(queue, clMem, value, pointer, clSize);        
     }
     
+    public<T extends MemoryStruct> CNativeMemory<T> createSubBufferNative(CNativeMemory<T> cmem, long offset, long size, long flag) 
+    { 
+        return null;
+    }
+        
     public<T extends IntStruct> CMemory<T> createValueI(Class<T> clazz, T t, long flag)
     {
         if(IntStruct.class.isAssignableFrom(clazz))

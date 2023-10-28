@@ -25,18 +25,22 @@ public class SimpleJOCL {
     {
         OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(CLFileReader.readFile(SimpleJOCL.class, "Hello.cl"));
         
-        //global size
-        int globalSize = 10;
+        //global byteCapacity
+        long globalSize = 10L;
         
-        MemoryStruct<Int32> srcA = new MemoryStruct(new Int32(), globalSize);
-        MemoryStruct<Int32> srcB = new MemoryStruct(new Int32(), globalSize);
-        MemoryStruct<Int32> dest = new MemoryStruct(new Int32(), globalSize);
+        MemoryStruct<Int32> srcA = new MemoryStruct(new Int32(), globalSize, false); 
+        MemoryStruct<Int32> srcB = new MemoryStruct(new Int32(), globalSize, false);
+        MemoryStruct<Int32> dest = new MemoryStruct(new Int32(), globalSize, false);
+        
         
         CNativeMemory<MemoryStruct<Int32>> nativeSrcA = configuration.createBufferNative(srcA, READ_ONLY);
         CNativeMemory<MemoryStruct<Int32>> nativeSrcB = configuration.createBufferNative(srcB, READ_ONLY);
         CNativeMemory<MemoryStruct<Int32>> nativeDest = configuration.createBufferNative(dest, WRITE_ONLY);
         
         Random rnd = new Random(System.currentTimeMillis());
+        
+       // nativeSrcA.transferToDevice();
+       // nativeSrcB.transferToDevice();
                         
         nativeSrcA.write(n -> n.forEachSet((t, i)-> new Int32((int)i))); 
         nativeSrcB.write(n -> n.forEachSet((t, i) ->new Int32((int)i)));
@@ -46,14 +50,15 @@ public class SimpleJOCL {
         
         //execute kernel
         CKernel vectorAdd = configuration.createKernel("sampleKernel", nativeSrcA, nativeSrcB, nativeDest);
-        configuration.execute1DKernel(vectorAdd, globalSize, globalSize);
+        configuration.execute1DKernel(vectorAdd, globalSize, 100);
         
         nativeDest.read(n -> System.out.println(n));
                 
-        nativeSrcA.write(n -> n.forEachSet((t, i) ->new Int32(rnd.nextInt(5))));   
-        System.out.println(nativeSrcA.getT());
+     //   nativeSrcA.write(n -> n.forEachSet((t, i) ->new Int32(rnd.nextInt(5))));   
+      //  System.out.println(nativeSrcA.getT());
         
-        configuration.execute1DKernel(vectorAdd, globalSize, globalSize);
-        nativeDest.read(n -> System.out.println(n));
+        configuration.execute1DKernel(vectorAdd, globalSize, 100);
+        nativeDest.transferFromDevice();
+     //   nativeDest.read(n -> System.out.println(n));
     }
 }

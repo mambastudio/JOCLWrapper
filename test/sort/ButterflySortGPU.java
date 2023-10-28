@@ -112,7 +112,7 @@ public class ButterflySortGPU<D>
         int radix  = 2;        
         int until = until(clength.getCL().v); 
         int T = (int) (Math.pow(radix, until)/radix);//data.length/radix if n is power of 2;
-                
+        
         int globalSize = T;
         int localSize = globalSize<256 ? globalSize : 256;
         
