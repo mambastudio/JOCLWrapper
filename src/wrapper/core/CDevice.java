@@ -8,12 +8,14 @@ package wrapper.core;
 import org.jocl.CL;
 import static org.jocl.CL.CL_DEVICE_MAX_CLOCK_FREQUENCY;
 import static org.jocl.CL.CL_DEVICE_NAME;
+import static org.jocl.CL.CL_DEVICE_SVM_CAPABILITIES;
 import static org.jocl.CL.CL_DEVICE_TYPE;
 import static org.jocl.CL.CL_DEVICE_TYPE_ACCELERATOR;
 import static org.jocl.CL.CL_DEVICE_TYPE_CPU;
 import static org.jocl.CL.CL_DEVICE_TYPE_DEFAULT;
 import static org.jocl.CL.CL_DEVICE_TYPE_GPU;
 import static org.jocl.CL.CL_DEVICE_VENDOR;
+import static org.jocl.CL.CL_SUCCESS;
 import static org.jocl.CL.clGetDeviceInfo;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -97,6 +99,31 @@ public class CDevice extends CObject
             return "CL_DEVICE_TYPE_DEFAULT";
         else
             return "UNDEFINED";
+    }
+    
+    public boolean hasSVMCapabilities()
+    {
+        long svmCapabilities[] = { 0 };
+        
+        int err = clGetDeviceInfo(this.getId(), CL_DEVICE_SVM_CAPABILITIES,
+            Sizeof.cl_long, Pointer.to(svmCapabilities), null);
+        
+        return err == CL_SUCCESS; 
+    }
+    
+    public void checkSVMCapabilities()
+    {
+        if(!hasSVMCapabilities())
+            throw new UnsupportedOperationException("Device has no supported SVM capabilities!");
+    }
+    
+    public String getSVMCapabilities()
+    {
+        long svmCapabilities[] = { 0 };
+        
+        clGetDeviceInfo(this.getId(), CL_DEVICE_SVM_CAPABILITIES,
+            Sizeof.cl_long, Pointer.to(svmCapabilities), null);
+        return CL.stringFor_cl_device_svm_capabilities(svmCapabilities[0]);
     }
     
     private long getLong(cl_device_id device, int paramName)

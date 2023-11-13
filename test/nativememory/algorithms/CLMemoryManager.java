@@ -6,7 +6,6 @@
 package nativememory.algorithms;
 
 import coordinate.memory.type.MemoryStruct;
-import coordinate.memory.type.MemoryStructFactory;
 import coordinate.memory.type.MemoryStructFactory.Int32;
 import coordinate.memory.type.MemoryStructFactory.Long64;
 import static coordinate.utility.BitUtility.next_multipleof;
@@ -24,7 +23,7 @@ import wrapper.core.OpenCLConfiguration;
 public class CLMemoryManager {
     public static OpenCLConfiguration configuration = null; 
     
-    public static void fillOne(CNativeMemory<MemoryStruct<Int32>> cmem)
+    public static void fillOne(CNativeMemory<Int32> cmem)
     {
         Objects.requireNonNull(configuration, "opencl configuration is null");
         Objects.requireNonNull(cmem, "memory is null");
@@ -32,7 +31,7 @@ public class CLMemoryManager {
         long  LOCALSIZE     = 64;
         long  GLOBALSIZE    = next_multipleof(cmem.size(), LOCALSIZE); 
        
-        CNativeMemory<MemoryStruct<Long64>> clength = configuration.createBufferNative(new MemoryStruct(new Long64(cmem.size())), READ_ONLY);
+        CNativeMemory<Long64> clength = configuration.createBufferNative(new MemoryStruct(new Long64(cmem.size())), READ_ONLY);
         clength.transferToDevice(); //always remember to transfer to device
         
         CKernel initArrayIntOneKernel = configuration.createKernel("InitArrayIntOne", cmem, clength);       
@@ -40,20 +39,20 @@ public class CLMemoryManager {
         configuration.finish();        
     }
     
-    public static CNativeMemory<MemoryStruct<Int32>> fillOne(MemoryStruct<Int32> mem)
+    public static CNativeMemory<Int32> fillOne(MemoryStruct<Int32> mem)
     {
-        CNativeMemory<MemoryStruct<Int32>> cmem = configuration.createBufferNative(mem, READ_WRITE);
+        CNativeMemory<Int32> cmem = configuration.createBufferNative(mem, READ_WRITE);
         fillOne(cmem);
         return cmem;
     }    
     
-    public static CNativeMemory<MemoryStruct<Int32>> fillOne(long size)
+    public static CNativeMemory<Int32> fillOne(long size)
     {
         MemoryStruct<Int32> mem = new MemoryStruct(new Int32(), size, false);
         return fillOne(mem);
     }  
     
-    public static void fillIndexReverse(CNativeMemory<MemoryStruct<Int32>> cmem)
+    public static void fillIndexReverse(CNativeMemory<Int32> cmem)
     {
         Objects.requireNonNull(configuration, "opencl configuration is null");
         Objects.requireNonNull(cmem, "memory is null");
@@ -61,7 +60,7 @@ public class CLMemoryManager {
         long  LOCALSIZE     = 64;
         long  GLOBALSIZE    = next_multipleof(cmem.size(), LOCALSIZE); 
        
-        CNativeMemory<MemoryStruct<Long64>> clength = configuration.createBufferNative(new MemoryStruct(new Long64(cmem.size())), READ_ONLY);
+        CNativeMemory<Long64> clength = configuration.createBufferNative(new MemoryStruct(new Long64(cmem.size())), READ_ONLY);
         clength.transferToDevice(); //always remember to transfer to device
         
         CKernel initArrayIntOneKernel = configuration.createKernel("InitArrayIntIndexReverse", cmem, clength);       
@@ -69,14 +68,14 @@ public class CLMemoryManager {
         configuration.finish();        
     }
     
-    public static CNativeMemory<MemoryStruct<Int32>> fillIndexReverse(MemoryStruct<Int32> mem)
+    public static CNativeMemory<Int32> fillIndexReverse(MemoryStruct<Int32> mem)
     {
-        CNativeMemory<MemoryStruct<Int32>> cmem = configuration.createBufferNative(mem, READ_WRITE);
+        CNativeMemory<Int32> cmem = configuration.createBufferNative(mem, READ_WRITE);
         fillIndexReverse(cmem);
         return cmem;
     }    
     
-    public static CNativeMemory<MemoryStruct<Int32>> fillIndexReverse(long size)
+    public static CNativeMemory<Int32> fillIndexReverse(long size)
     {
         MemoryStruct<Int32> mem = new MemoryStruct(new Int32(), size, false);
         return fillIndexReverse(mem);

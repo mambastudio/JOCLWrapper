@@ -25,7 +25,7 @@ import wrapper.core.OpenCLConfiguration;
  */
 public class CLSortInteger {
     private final OpenCLConfiguration configuration;
-    private final CNativeMemory<MemoryStruct<Int32>> cdata;    
+    private final CNativeMemory<Int32> cdata;    
     private final long length;
     
     private boolean invoked = false;
@@ -40,7 +40,7 @@ public class CLSortInteger {
         this.length = cdata.size();   
     }
     
-    public CLSortInteger(OpenCLConfiguration configuration, CNativeMemory<MemoryStruct<Int32>> data, boolean dataAlreadyTransfered)
+    public CLSortInteger(OpenCLConfiguration configuration, CNativeMemory<Int32> data, boolean dataAlreadyTransfered)
     {
         this.dataAlreadyTransfered = dataAlreadyTransfered;
         this.configuration = configuration;
@@ -62,8 +62,8 @@ public class CLSortInteger {
                 
         MemoryStruct<Long64> mlength = new MemoryStruct(new Long64(length));     
         MemoryStruct<Float32>  mpowerx  = new MemoryStruct(new Float32());        
-        CNativeMemory<MemoryStruct<Long64>> clength     = configuration.createBufferNative(mlength, READ_ONLY);
-        CNativeMemory<MemoryStruct<Float32>> cpowerx    = configuration.createBufferNative(mpowerx, READ_WRITE);
+        CNativeMemory<Long64> clength     = configuration.createBufferNative(mlength, READ_ONLY);
+        CNativeMemory<Float32> cpowerx    = configuration.createBufferNative(mpowerx, READ_WRITE);
         
         clength.transferToDevice(); //this is very very important
         

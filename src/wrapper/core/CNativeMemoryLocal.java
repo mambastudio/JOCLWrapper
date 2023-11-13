@@ -5,7 +5,6 @@
  */
 package wrapper.core;
 
-import coordinate.memory.type.MemoryStruct;
 import coordinate.memory.type.MemoryStructFactory.Float32;
 import coordinate.memory.type.MemoryStructFactory.Int32;
 import coordinate.memory.type.StructBase;
@@ -15,7 +14,7 @@ import coordinate.memory.type.StructBase;
  * @author user
  * @param <S>
  */
-public class CNativeMemoryLocal<S extends StructBase> extends CNativeMemory<MemoryStruct<S>> {
+public class CNativeMemoryLocal<S extends StructBase> extends CNativeMemory<S> {
     
     public static CNativeMemoryLocal<Int32>     LOCALINT        =   new CNativeMemoryLocal(new Int32());
     public static CNativeMemoryLocal<Float32>   LOCALFLOAT      =   new CNativeMemoryLocal(new Float32());

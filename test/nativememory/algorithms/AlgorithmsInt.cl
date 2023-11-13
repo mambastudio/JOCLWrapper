@@ -3,7 +3,8 @@ __kernel void InitArrayIntZero(
     global long* length)
 {
     uint global_id = get_global_id(0);
-    array[global_id] = select(array[global_id], 0, global_id < *length); //b : a ? condition
+    if(global_id < *length)
+        array[global_id] = 0;    
 }
 
 __kernel void InitArrayIntOne(
@@ -11,7 +12,17 @@ __kernel void InitArrayIntOne(
     global long* length)
 {
     uint global_id = get_global_id(0);
-    array[global_id] = select(0, 1, global_id < *length); //b : a ? condition
+    if(global_id < *length)
+        array[global_id] = 1; 
+}
+
+__kernel void InitArrayIntIndex(
+    global int* array,
+    global long* length)
+{
+    uint global_id = get_global_id(0);
+    if(global_id < *length)
+        array[global_id] = (int)(global_id); 
 }
 
 __kernel void InitArrayIntIndexReverse(
@@ -19,7 +30,8 @@ __kernel void InitArrayIntIndexReverse(
     global long* length)
 {
     uint global_id = get_global_id(0);
-    array[global_id] = select(0, (int)(*length - global_id), global_id < *length); //b : a ? condition
+    if(global_id < *length)
+        array[global_id] = (int)(*length - global_id); 
 }
 
 __kernel void InitArrayIntOneNegative(
@@ -27,7 +39,8 @@ __kernel void InitArrayIntOneNegative(
     global long* length)
 {
     uint global_id = get_global_id(0);
-    array[global_id] = select(array[global_id], -1, global_id < *length); //b : a ? condition
+    if(global_id < *length)
+        array[global_id] = -1; 
 }
 
 int GET_INT(__global int* array, int index, long arbitraryLength)
@@ -40,7 +53,7 @@ int SET_INT(__global int* array, int value, int index, long arbitraryLength)
     array[index] = select(0, value, index < arbitraryLength);    //b : a ? condition
 }
 
-//sequential exclusive reduce on global scale (quite fast and trivial, for small global size) global = 1, local = 1
+//sequential exclusive reduce on global scale (quite fast and trivial, for small global array size) global = 1, local = 1
 __kernel void ReduceLoopInt (__global int* groupSum,                             
                              __global long* groupSize,
                              __global int* result)
@@ -51,30 +64,33 @@ __kernel void ReduceLoopInt (__global int* groupSum,
 }
 
 //https://dournac.org/info/gpu_sum_reduction
- __kernel void ReduceInt(__global const int     *in, 
-                         __global       int     *groupSum,
+ __kernel void ReduceInt(__global const int     *input, 
+                         __global       int     *groupSums,
                          __global       long    *arbitraryLength,
-                         __local        int     *aux)
+                         __local        int     *localSums)
 {
-    uint local_id  =  get_local_id ( 0 ) ;
-    uint global_id =  get_global_id( 0 );
-    uint group_size  =  get_local_size ( 0 ) ;
+    uint local_id  =  get_local_id(0);
+    uint global_id = get_global_id(0);
+    uint group_id = get_group_id(0);
+    uint group_size  =  get_local_size(0);
 
     // Copy from global to local memory
-    aux[local_id]  =  GET_INT(in, global_id, *arbitraryLength);
+    localSums[local_id]  =  input[global_id] ;
 
     //  Loop for computing localSums: divide WorkGroup into 2 parts
-    for  (uint stride  =  group_size/2; stride>0; stride /=2)
+    for  ( uint stride  =  group_size/2; stride>0; stride /=2)
     {
         // Waiting for each 2x2 addition into given workgroup
         barrier ( CLK_LOCAL_MEM_FENCE ) ;
 
         // Add elements 2 by 2 between local_id and local_id + stride
-        aux[local_id] += select(0, aux[local_id  +  stride], local_id  <  stride) ;
+        if  ( local_id  <  stride )
+            localSums[local_id] += localSums[local_id  +  stride];
     }
 
-    // Write result into partialSums[nWorkGroups]
-    groupSum[global_id]  =  (groupSum[global_id], aux[0], local_id ==  0) ;
+    // Write result into partialSums[nWorkGroups] - DON'T USE SELECT!
+    if( local_id == 0)
+        groupSums[group_id] = localSums[0];
 }   
 
 //This can be replaced by any other prefix sum that is deemed suitable (works in local size only)

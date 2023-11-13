@@ -8,7 +8,6 @@ package wrapper.core;
 import coordinate.struct.Struct;
 import coordinate.unsafe.UnsafeUtils;
 import java.nio.Buffer;
-import java.nio.ByteBuffer;
 import java.util.function.BiConsumer;
 import static org.jocl.CL.CL_MEM_ALLOC_HOST_PTR;
 import static org.jocl.CL.CL_MEM_COPY_HOST_PTR;
@@ -106,8 +105,6 @@ public abstract class CMemory<T extends Struct> extends CObject {
         }
         transferToDevice();
     }
-    
-    
     
     public Object getBufferArray()
     {

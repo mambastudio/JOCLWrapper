@@ -57,7 +57,7 @@ public class JOCLSample_2_0_SVM
         
         // Allocate shared virtual memory
         Pointer svm = clSVMAlloc(context, 
-            CL_MEM_READ_WRITE, Sizeof.cl_float * n, 0);
+            CL_MEM_READ_WRITE, Sizeof.cl_float * n, 0); 
        
         // Set the arguments for the kernel
         int a = 0;
@@ -169,7 +169,7 @@ public class JOCLSample_2_0_SVM
     private static void initCL()
     {
         // The platform and device type that will be used
-        final int platformIndex = 0;
+        final int platformIndex = 1;
         final long deviceType = CL_DEVICE_TYPE_ALL;
 
         // Enable exceptions and subsequently omit error checks in this sample

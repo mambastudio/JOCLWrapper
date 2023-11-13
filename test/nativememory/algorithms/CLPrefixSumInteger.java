@@ -24,12 +24,12 @@ import wrapper.core.OpenCLConfiguration;
 public class CLPrefixSumInteger 
 {
     private final OpenCLConfiguration configuration;    
-    private final CNativeMemory<MemoryStruct<Int32>> cdata;    
+    private final CNativeMemory<Int32> cdata;    
     private final long length;
     
-    private CNativeMemory<MemoryStruct<Long64>> clength;     
-    private CNativeMemory<MemoryStruct<Int32>> cgroupSum;       
-    private CNativeMemory<MemoryStruct<Long64>> cgroupSize;   
+    private CNativeMemory<Long64> clength;     
+    private CNativeMemory<Int32> cgroupSum;       
+    private CNativeMemory<Long64> cgroupSize;   
     
     private CKernel localScanIntegerKernel;  
     private CKernel groupScanIntegerKernel;  
@@ -43,19 +43,8 @@ public class CLPrefixSumInteger
     private boolean dataAlreadyTransfered = false;
     
     private final ArrayList<MemoryStruct> nativeMemories = new ArrayList();
-    
-    public CLPrefixSumInteger(OpenCLConfiguration configuration, MemoryStruct<Int32> data)
-    {
-        
-        this.configuration = configuration;
-        this.cdata = configuration.createBufferNative(data, READ_WRITE);        
-        this.length = cdata.size();
-        
-        GLOBALSIZE  = next_multipleof(length, LOCALSIZE); 
-        GROUPSIZE   = GLOBALSIZE/LOCALSIZE;    
-    }
-    
-    public CLPrefixSumInteger(OpenCLConfiguration configuration, CNativeMemory<MemoryStruct<Int32>> data, boolean dataAlreadyTransfered)
+           
+    public CLPrefixSumInteger(OpenCLConfiguration configuration, CNativeMemory<Int32> data, boolean dataAlreadyTransfered)
     {
         this.dataAlreadyTransfered = dataAlreadyTransfered;
         this.configuration = configuration;
@@ -63,9 +52,9 @@ public class CLPrefixSumInteger
         this.length = cdata.size();
         
         GLOBALSIZE  = next_multipleof(length, LOCALSIZE); 
-        GROUPSIZE   = GLOBALSIZE/LOCALSIZE;
+        GROUPSIZE   = GLOBALSIZE/LOCALSIZE; //if actual length is less than local size, group size is 1
     }
-    
+        
     private void init()
     {
         initBuffers();
@@ -105,8 +94,8 @@ public class CLPrefixSumInteger
         if(invoked)
             throw new UnsupportedOperationException("the prefix sum has been invoked before, therefore create a new one");
         
-        //these three kernels would provide a prefix sum that is quite fast for a huge array
-        configuration.execute1DKernel(localScanIntegerKernel, GLOBALSIZE, LOCALSIZE); //start doing a local (workgroup) byteCapacity scan
+        //start doing a local (workgroup) byteCapacity scan
+        configuration.execute1DKernel(localScanIntegerKernel, GLOBALSIZE, LOCALSIZE); 
         
         //tree execution (if groupsum is quite large, therefore local scan suffices)
         if(GROUPSIZE > 1<<18)
@@ -117,7 +106,8 @@ public class CLPrefixSumInteger
         else //do serial scan
             configuration.execute1DKernel(groupScanIntegerKernel, 1, 1); //Do group level scan
         
-        configuration.execute1DKernel(globalScanIntegerKernel, GLOBALSIZE, LOCALSIZE); //add the group level scan to the local byteCapacity scan
+        //add the group level scan to the local byteCapacity scan
+        configuration.execute1DKernel(globalScanIntegerKernel, GLOBALSIZE, LOCALSIZE); 
         configuration.finish();
         
         for(MemoryStruct struct: nativeMemories)
