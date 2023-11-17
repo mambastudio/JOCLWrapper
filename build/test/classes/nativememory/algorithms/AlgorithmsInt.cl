@@ -43,6 +43,31 @@ __kernel void InitArrayIntOneNegative(
         array[global_id] = -1; 
 }
 
+__kernel void TransformIntToOne(
+    global int*     array,
+    global int*     result,
+    global long*    length)
+{
+    uint global_id = get_global_id(0);
+    if(global_id >= *length)
+        return;
+
+    result[global_id] = select(0, 1, array[global_id] != 0);
+}
+
+__kernel void TransformIntToOneReverse(
+    global int*     array,
+    global int*     result,
+    global long*    length)
+{
+    uint global_id = get_global_id(0);
+    if(global_id >= *length)
+        return;
+
+    result[global_id] = select(1, 0, array[global_id] != 0);
+}
+
+
 int GET_INT(__global int* array, int index, long arbitraryLength)
 {
     return select(0, array[index], index < arbitraryLength);   //b : a ? condition

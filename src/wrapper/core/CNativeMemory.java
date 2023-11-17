@@ -7,7 +7,6 @@ package wrapper.core;
 
 import coordinate.memory.type.MemoryStruct;
 import coordinate.memory.type.StructBase;
-import coordinate.utility.BitUtility;
 import java.util.function.Consumer;
 import org.jocl.CL;
 import static org.jocl.CL.CL_BUFFER_CREATE_TYPE_REGION;

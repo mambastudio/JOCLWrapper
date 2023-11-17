@@ -17,6 +17,7 @@ import coordinate.struct.structint.StructIntArray;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.Objects;
 import org.jocl.CL;
 import org.jocl.Pointer;
 import org.jocl.Sizeof;
@@ -70,7 +71,32 @@ public class OpenCLConfiguration {
     
     public CDevice getDevice()
     {
+        Objects.requireNonNull(device);
         return device;
+    }
+    
+    public CContext getContext()
+    {
+        Objects.requireNonNull(context);
+        return context;
+    }
+    
+    public CCommandQueue getQueue()
+    {
+        Objects.requireNonNull(queue);
+        return queue;
+    }
+    
+    public<T extends StructBase> SVMNative<T> createSVM(T t, long size)
+    {
+        return new SVMNative(queue, context, t, size);
+    }
+    
+    public<T extends StructBase> SVMNative<T> createSVMValue(T t)
+    {
+        SVMNative<T> s = new SVMNative(queue, context, t, 1);
+        s.write(t);
+        return s;
     }
         
     public<T extends FloatStruct> CMemory<T> createBufferF(Class<T> clazz, int size, long flag)
@@ -198,7 +224,7 @@ public class OpenCLConfiguration {
         
         return new CNativeMemory(queue, clMem, value, pointer, clSize);        
     }
-    
+        
     public<T extends IntStruct> CMemory<T> createValueI(Class<T> clazz, T t, long flag)
     {
         if(IntStruct.class.isAssignableFrom(clazz))
@@ -300,6 +326,11 @@ public class OpenCLConfiguration {
         return program.createKernel(kernelName, memory);
     }
     
+    public CKernel createKernel(String kernelName, CMemorySkeleton... memory)
+    {
+        return program.createKernel(kernelName, memory);
+    }
+    
     public void execute1DKernel(CKernel kernel, long globalWorkSize, long localWorkSize)
     {
         queue.put1DRangeKernel(kernel, globalWorkSize, localWorkSize); 
@@ -327,10 +358,5 @@ public class OpenCLConfiguration {
     private static byte getBit(int position, long ID)
     {
        return (byte) ((ID >> position) & 1);
-    }
-    
-    public CContext getContext()
-    {
-        return context;
-    }
+    }    
 }

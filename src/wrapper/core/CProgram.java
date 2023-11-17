@@ -60,6 +60,13 @@ public class CProgram extends CObject implements CResource
         return kernel;
     }
     
+    public CKernel createKernel(String kernelName, CMemorySkeleton... buffers)
+    {
+        CKernel kernel = createKernel(kernelName).putArgs(buffers);
+        CResourceFactory.registerKernel(kernelName, kernel);
+        return kernel;
+    }
+    
     public CKernel createKernel(String kernelName, CNativeMemory... buffers)
     {
         CKernel kernel = createKernel(kernelName).putArgs(buffers);

@@ -11,10 +11,12 @@ import coordinate.memory.type.MemoryStructFactory.Long64;
 import static coordinate.utility.BitUtility.next_multipleof;
 import java.util.Objects;
 import wrapper.core.CKernel;
+import wrapper.core.CMemorySkeleton;
 import wrapper.core.CNativeMemory;
 import static wrapper.core.CNativeMemory.READ_ONLY;
 import static wrapper.core.CNativeMemory.READ_WRITE;
 import wrapper.core.OpenCLConfiguration;
+import wrapper.core.SVMNative;
 
 /**
  *
@@ -39,6 +41,21 @@ public class CLMemoryManager {
         configuration.finish();        
     }
     
+    public static void fillOne(CMemorySkeleton<Int32> cmem)
+    {
+        Objects.requireNonNull(configuration, "opencl configuration is null");
+        Objects.requireNonNull(cmem, "memory is null");
+        
+        long  LOCALSIZE     = 64;
+        long  GLOBALSIZE    = next_multipleof(cmem.size(), LOCALSIZE); 
+       
+        CMemorySkeleton<Long64> clength = configuration.createSVMValue(new Long64(cmem.size()));
+        
+        CKernel initArrayIntOneKernel = configuration.createKernel("InitArrayIntOne", cmem, clength);       
+        configuration.execute1DKernel(initArrayIntOneKernel, GLOBALSIZE, LOCALSIZE);
+        configuration.finish();        
+    }
+    
     public static CNativeMemory<Int32> fillOne(MemoryStruct<Int32> mem)
     {
         CNativeMemory<Int32> cmem = configuration.createBufferNative(mem, READ_WRITE);
@@ -50,8 +67,8 @@ public class CLMemoryManager {
     {
         MemoryStruct<Int32> mem = new MemoryStruct(new Int32(), size, false);
         return fillOne(mem);
-    }  
-    
+    } 
+        
     public static void fillIndexReverse(CNativeMemory<Int32> cmem)
     {
         Objects.requireNonNull(configuration, "opencl configuration is null");
@@ -80,4 +97,19 @@ public class CLMemoryManager {
         MemoryStruct<Int32> mem = new MemoryStruct(new Int32(), size, false);
         return fillIndexReverse(mem);
     }  
+    
+    public static void fillIndexReverse(CMemorySkeleton<Int32> cmem)
+    {
+        Objects.requireNonNull(configuration, "opencl configuration is null");
+        Objects.requireNonNull(cmem, "memory is null");
+        
+        long  LOCALSIZE     = 64;
+        long  GLOBALSIZE    = next_multipleof(cmem.size(), LOCALSIZE); 
+       
+        CMemorySkeleton<Long64> clength = configuration.createSVMValue(new Long64(cmem.size()));
+        
+        CKernel initArrayIntOneKernel = configuration.createKernel("InitArrayIntIndexReverse", cmem, clength);       
+        configuration.execute1DKernel(initArrayIntOneKernel, GLOBALSIZE, LOCALSIZE);
+        configuration.finish();        
+    }
 }

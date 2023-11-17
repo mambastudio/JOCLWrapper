@@ -5,9 +5,12 @@
  */
 package nativememory;
 
+import wrapper.core.SVMNative;
 import coordinate.memory.nativememory.NativeInteger;
 import coordinate.memory.type.MemoryStruct;
 import coordinate.memory.type.MemoryStructFactory.Int32;
+import coordinate.memory.type.MemoryStructFactory.Long64;
+import coordinate.memory.type.StructBase;
 import java.util.Arrays;
 import java.util.Random;
 import nativememory.algorithms.CLMemoryManager;
@@ -31,7 +34,7 @@ import wrapper.util.CLFileReader;
 public class SimpleJOCL {
     public static void main(String... args)
     {
-        testSubMemory();
+        testSVM();
     }
     
     public static void testSimple()
@@ -105,4 +108,38 @@ public class SimpleJOCL {
         
         System.out.println(configuration.getDevice().hasSVMCapabilities());
     }
+    
+    public static void testSVM()
+    {
+        OpenCLConfiguration config = OpenCLConfiguration.getDefault(CLFileReader.readFile(SimpleJOCL.class, "Hello.cl"));
+        
+        //global byteCapacity
+        long globalSize = 20L;
+        long localSize = 10L;
+        
+        SVMNative<Int32> srcA = config.createSVM(new Int32(), globalSize);
+        SVMNative<Int32> srcB = config.createSVM(new Int32(), globalSize);
+        SVMNative<Int32> dest = config.createSVM(new Int32(), globalSize);
+        
+        srcA.write((t, i)-> new Int32((int)i)); 
+        srcB.write((t, i) ->new Int32((int)i));
+       
+        System.out.println(srcA);
+        System.out.println(srcB);
+        
+        //execute kernel
+        CKernel vectorAdd = config.createKernel("sampleKernel", srcA, srcB, dest);
+        config.execute1DKernel(vectorAdd, globalSize, localSize);
+        
+        System.out.println(dest);
+        
+        SVMNative<Int32> destSub = dest.offsetIndex(5);
+        
+        CKernel fillOne = config.createKernel("InitArrayIntOne", destSub);
+        config.execute1DKernel(fillOne, 15, 5);
+        
+        System.out.println(dest);
+        
+    }
+    
 }

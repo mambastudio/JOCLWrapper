@@ -73,6 +73,19 @@ public class CKernel extends CObject implements CResource
         return this;
     }
     
+    public CKernel putArgs(CMemorySkeleton... values)
+    {        
+        for(CMemorySkeleton value : values) 
+        {                   
+            if(value.isLocal())
+                clSetKernelArg(getId(), argIndex++, value.elementSize(), null);
+            else if(value.isSVM())
+                clSetKernelArgSVMPointer(getId(), argIndex++, value.getPointer());
+            else
+                clSetKernelArg(getId(), argIndex++, value.getByteCapacity(), value.getPointer());
+        }        
+        return this;
+    }
     
     
     public CKernel resetPutArgs(CMemory<?>... values)
