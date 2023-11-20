@@ -104,13 +104,14 @@ public class CPrefixSumInteger
     }
     
     //called once
-    public void execute()
+    public int execute()
     {
         init();
         kernelExecute();
+        return sum();
     }    
     
-    public int result()
+    public int sum()
     {
         return cdata.readLast().value();
     }

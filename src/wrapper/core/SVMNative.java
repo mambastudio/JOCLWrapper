@@ -14,6 +14,7 @@ import coordinate.utility.RangeLong;
 import java.lang.reflect.Field;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -194,6 +195,14 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T>{
         enqueueUnmap();
     }
     
+    
+    @Override
+    public void write(Consumer<MemoryStruct<T>> consume) {
+        enqueueWrite();
+        consume.accept(memory);
+        enqueueUnmap();
+    }
+    
     @Override
     public T read(long index)
     {
@@ -240,4 +249,5 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T>{
         else
             return memory.getStructBase();
     }
+
 }

@@ -1,3 +1,20 @@
+void Swap(int PosSIndex, int PosEIndex, global int* data)
+{       
+    int tmp          = data[PosSIndex];
+    data[PosSIndex]  = data[PosEIndex];
+    data[PosEIndex]  = tmp;
+}
+
+__kernel void CopyTo(
+    global int* in,
+    global int* out,
+    global long* length)
+{
+    uint global_id = get_global_id(0);
+    if(global_id < *length)
+        out[global_id] = in[global_id];
+}
+
 __kernel void InitArrayIntZero(
     global int* array,
     global long* length)
@@ -23,6 +40,15 @@ __kernel void InitArrayIntIndex(
     uint global_id = get_global_id(0);
     if(global_id < *length)
         array[global_id] = (int)(global_id); 
+}
+
+__kernel void InitArrayIntIndexInclusive(
+    global int* array,
+    global long* length)
+{
+    uint global_id = get_global_id(0);
+    if(global_id < *length)
+        array[global_id] = (int)(global_id) + 1; 
 }
 
 __kernel void InitArrayIntIndexReverse(
@@ -67,6 +93,25 @@ __kernel void TransformIntToOneReverse(
     result[global_id] = select(1, 0, array[global_id] != 0);
 }
 
+__kernel void PartitionInt(
+    global int*     in,
+    global int*     out,
+    global int*     indices_1,
+    global int*     indices_2,
+    global int*     flags,
+    global int*     partitionIndex,
+    global long*    length)
+{
+    uint global_id = get_global_id(0);
+    if(global_id >= *length)
+        return;
+
+    //Seems impossible to do it branchless but no noticeable performance hit
+    if(flags[global_id] != 0)                    
+        out[indices_1[global_id]] = in[global_id];
+    if(flags[global_id] == 0)
+        out[indices_2[global_id] + *partitionIndex] = in[global_id];
+}
 
 int GET_INT(__global int* array, int index, long arbitraryLength)
 {
@@ -218,13 +263,6 @@ bool IsGreaterThan(int posStart, int posEnd, long length, global int* data)
     return value1 > value2;
 }
 
-void Swap(int PosSIndex, int PosEIndex, global int* data)
-{       
-    int tmp          = data[PosSIndex];
-    data[PosSIndex]  = data[PosEIndex];
-    data[PosEIndex]  = tmp;
-}
-
 __kernel void Butterfly1_Int(global int* data, global long* lengthSize, global float* powerX)
 {
      int gid = get_global_id(0);
@@ -260,3 +298,45 @@ __kernel void Butterfly2_Int(global int* data, global long* lengthSize, global f
     if(IsGreaterThan(PosStart, PosEnd, length, data))
         Swap(PosStart, PosEnd, data);
 }
+__kernel void Butterfly1_IntPair(global int* keys, global int* values, global long* lengthSize, global float* powerX)
+{
+    int gid = get_global_id(0);
+
+    int t = gid;
+    int radix = 2;
+    long length = lengthSize[0];
+    int PowerX = powerX[0];
+
+    int yIndex      = (int) (t/(PowerX/radix));
+    int kIndex      = (int) (t%(PowerX/radix));
+    int PosStart    = (int) (kIndex + yIndex * PowerX);
+    int PosEnd      = (int) (PowerX - kIndex - 1 + yIndex * PowerX);
+
+    if(IsGreaterThan(PosStart, PosEnd, length, keys))
+    {
+        Swap(PosStart, PosEnd, keys);
+        Swap(PosStart, PosEnd, values);
+    }
+}
+
+__kernel void Butterfly2_IntPair(global int* keys, global int* values, global long* lengthSize, global float* powerX)
+{
+    int gid = get_global_id(0);
+
+    int t = gid;
+    int radix = 2;
+    long length = lengthSize[0];
+    int PowerX = powerX[0];
+
+    int yIndex      = (int) (t/(PowerX/radix));
+    int kIndex      = (int) (t%(PowerX/radix));
+    int PosStart    = (int) (kIndex + yIndex * PowerX);
+    int PosEnd      = (int) (kIndex + yIndex * PowerX + PowerX/radix);
+                            
+    if(IsGreaterThan(PosStart, PosEnd, length, keys))
+    {
+        Swap(PosStart, PosEnd, keys);
+        Swap(PosStart, PosEnd, values);
+    }
+}
+

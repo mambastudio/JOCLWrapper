@@ -5,6 +5,7 @@
  */
 package nativememory.algorithms;
 
+import coordinate.memory.type.LayoutValue;
 import coordinate.memory.type.MemoryStruct;
 import coordinate.memory.type.MemoryStructFactory.Int32;
 import coordinate.utility.Timer;
@@ -22,7 +23,7 @@ import wrapper.util.CLFileReader;
 public class TestAlgorithms {
     public static void main(String... args)
     {
-        test6();
+        test8();
         
     }
     
@@ -125,7 +126,7 @@ public class TestAlgorithms {
         OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(CLFileReader.readFile(TestAlgorithms.class, "AlgorithmsInt.cl"));
         CLMemoryManager.configuration = configuration;
         
-        CMemorySkeleton<Int32> cdata = configuration.createSVM(new Int32(), 16_000_000);
+        CMemorySkeleton<Int32> cdata = configuration.createSVM(new Int32(), 5_000_000);
         CLMemoryManager.fillIndexReverse(cdata);        
         
         CSortInteger sort = new CSortInteger(configuration, cdata);
@@ -133,5 +134,50 @@ public class TestAlgorithms {
         System.out.println(time);
                 
         System.out.println(cdata.read());   
+    }
+    
+    //butterfly sort integer
+    public static void test7()
+    {
+        OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(CLFileReader.readFile(TestAlgorithms.class, "AlgorithmsInt.cl"));
+        CLMemoryManager.configuration = configuration;
+        
+        long n                          = 100_000_000;
+        CMemorySkeleton<Int32> in       = configuration.createSVM(new Int32(), n);
+        CMemorySkeleton<Int32> out      = configuration.createSVM(new Int32(), n);
+        CMemorySkeleton<Int32> flags    = configuration.createSVM(new Int32(), n);
+        
+        CLMemoryManager.fillIndexInclusive(in);
+        CLMemoryManager.fillOne(flags);
+        //flags.write(memory -> memory.getMemory().setAtIndex(LayoutValue.JAVA_INT, 0, new int[]{1, 0, 0, 1, 0, 1, 1, 0}));
+                
+        CPartitionInteger partition = new CPartitionInteger(configuration, in, out, n, flags);
+        Timer timer = Timer.timeThis(()->partition.execute());
+        System.out.println(timer);
+       // System.out.println(out);
+        System.out.println(partition.partitionIndex());
+    }
+    
+    //butterfly sort integer
+    public static void test8()
+    {
+        OpenCLConfiguration configuration = OpenCLConfiguration.getDefault(CLFileReader.readFile(TestAlgorithms.class, "AlgorithmsInt.cl"));
+        CLMemoryManager.configuration = configuration;
+        
+        long n                              = 7;
+        CMemorySkeleton<Int32> keys_in      = configuration.createSVM(new Int32(), n);
+        CMemorySkeleton<Int32> values_in    = configuration.createSVM(new Int32(), n);
+        CMemorySkeleton<Int32> keys_out     = configuration.createSVM(new Int32(), n);
+        CMemorySkeleton<Int32> values_out   = configuration.createSVM(new Int32(), n);        
+        
+        keys_in.write(memory -> memory.getMemory().setAtIndex(LayoutValue.JAVA_INT, 0, new int[]{8, 6, 7, 5, 3, 0, 9}));
+        values_in.write(memory -> memory.getMemory().setAtIndex(LayoutValue.JAVA_INT, 0, new int[]{0, 1, 2, 3, 4, 5, 6}));
+                
+        CSortPairsInteger sortPair = new CSortPairsInteger(configuration, keys_in, values_in, keys_out, values_out, n);
+        Timer timer = Timer.timeThis(()->sortPair.execute());
+        System.out.println(timer);
+        
+        System.out.println(keys_out);
+        System.out.println(values_out);
     }
 }

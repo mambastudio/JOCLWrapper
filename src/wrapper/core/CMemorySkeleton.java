@@ -5,10 +5,12 @@
  */
 package wrapper.core;
 
+import coordinate.memory.type.MemoryStruct;
 import coordinate.memory.type.MemoryStruct.BiObjLongFunction;
 import coordinate.memory.type.StructBase;
 import coordinate.utility.RangeLong;
 import java.util.Objects;
+import java.util.function.Consumer;
 import org.jocl.Pointer;
 
 /**
@@ -37,6 +39,7 @@ public interface CMemorySkeleton<T extends StructBase> {
     public void write(RangeLong range, BiObjLongFunction<T> function);    
     public void write(T t);    
     public void write(long index, T t);
+    public void write(Consumer<MemoryStruct<T>> consume);
     public T read(long index);
     public T read();
     default T readLast(){return read(size()-1);}
