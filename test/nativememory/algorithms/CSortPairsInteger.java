@@ -58,7 +58,7 @@ public class CSortPairsInteger {
         if(invoked)
             throw new UnsupportedOperationException("the sort has been invoked before, therefore create a new one");
         
-        //transfer copy to memory  
+        //transfer copyStruct to memory  
         CLMemoryManager.copyMemory(ckeys, ckeysOut, n);
         CLMemoryManager.copyMemory(cvalues, cvaluesOut, n);
         

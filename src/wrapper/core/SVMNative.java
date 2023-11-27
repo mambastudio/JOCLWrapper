@@ -72,7 +72,7 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T>{
         LayoutMemory memoryLayout = LayoutArray.arrayLayout(size, t.getLayout());
         svm = clSVMAlloc(context.getId(), 
             CL_MEM_READ_WRITE, memoryLayout.byteSizeAggregate(), 0);         
-        memory = new MemoryStruct(t, getAddressFromPointer(), size);   
+        memory = new MemoryStruct(t, size, getAddressFromPointer());   
         isSubMemory = false;
         this.localT = null;
     }
