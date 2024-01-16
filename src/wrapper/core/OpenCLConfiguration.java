@@ -28,6 +28,8 @@ import static wrapper.core.CMemory.validateMemoryType;
 import static wrapper.core.CDevice.DeviceType.GPU;
 import wrapper.core.image.CImage;
 import wrapper.core.memory.CIntStructMemory;
+import wrapper.core.svm.SVMNative;
+import wrapper.core.svm.SVMNative.MemStrategy;
 import wrapper.util.CLOptions;
 
 /**
@@ -87,6 +89,12 @@ public class OpenCLConfiguration {
         return queue;
     }
     
+    public CProgram getProgram()
+    {
+        Objects.requireNonNull(program);
+        return program;
+    }
+    
     public<T extends StructBase> SVMNative<T> createSVM(T t, long size)
     {
         return new SVMNative(queue, context, t, size);
@@ -95,10 +103,10 @@ public class OpenCLConfiguration {
     public<T extends StructBase> SVMNative<T> createSVMValue(T t)
     {
         SVMNative<T> s = new SVMNative(queue, context, t, 1);
-        s.write(t);
+        s.set(t);
         return s;
     }
-        
+       
     public<T extends FloatStruct> CMemory<T> createBufferF(Class<T> clazz, int size, long flag)
     {
         if(FloatStruct.class.isAssignableFrom(clazz))
