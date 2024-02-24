@@ -33,6 +33,7 @@ import static org.jocl.CL.clEnqueueSVMFree;
 import static org.jocl.CL.clEnqueueSVMMap;
 import static org.jocl.CL.clEnqueueSVMUnmap;
 import static org.jocl.CL.clSVMAlloc;
+import static org.jocl.CL.clSVMFree;
 import org.jocl.Pointer;
 import org.jocl.SVMFreeFunction;
 import org.jocl.cl_command_queue;
@@ -113,10 +114,11 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T, SVMNa
         this.context = context;
         LayoutMemory memoryLayout = LayoutArray.arrayLayout(size, t.getLayout());
         svm = clSVMAlloc(context.getId(), 
-            memType, memoryLayout.byteSizeAggregate(), 0); 
+            memType, memoryLayout.byteSizeAggregate(), 0);         
         svmRoot = svm;
         this.memory = MemoryAllocator.allocateNativeAddress(t.sizeOf() * size, getAddressFromPointer());
-        this.isSubMemory = false;        
+        this.isSubMemory = false;  
+        validateMemory();
     }
     
     public SVMNative(CCommandQueue queue, CContext context, T t, long size)
@@ -190,6 +192,7 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T, SVMNa
 
     @Override
     public void reallocate(long size) {
+        validateMemory();
         if(isSubMemory)
             throw new UnsupportedOperationException("cannot reallocate since it's a sub memory");
         free();
@@ -214,6 +217,7 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T, SVMNa
     
     public void forEach(LongConsumer consumer)
     {
+        validateMemory();
         mapWriteFunction(()->{
             for(long i = 0; i<size(); i++)
                 consumer.accept(i);
@@ -223,6 +227,7 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T, SVMNa
     
     public void apply(int index, Function<T, T> function)
     {
+        validateMemory();
         T getT = get(index);
         mapWriteFunction(()->{
             T t = function.apply(getT);
@@ -437,12 +442,14 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T, SVMNa
     @Override
     public void free() {
         if(isSubMemory || isFree()) //should free from the main memory
-            return;
+            return;           
         SVMFreeFunction callback = (cl_command_queue que, int num_svm_pointers, Pointer[] svm_pointers, Object user_data) -> {
-         //   memory.dispose(); - no need, since the pointer is released by opencl through clEnqueueSVMFree
+            for (int i = 0; i < num_svm_pointers; i++) {                     
+                clSVMFree(context.getId(), svm_pointers[i]);
+            }
         };
         clEnqueueSVMFree(queue.getId(), 1, new Pointer[]{svm}, 
-            callback, null, 0, null, null);   
+            callback, null, 0, null, null);           
         isFree = true;
     }
     
@@ -516,5 +523,13 @@ public class SVMNative<T extends StructBase> implements CMemorySkeleton<T, SVMNa
     public long byteCapacityRoot()
     {
         return sizeRoot * structBase.sizeOf();
+    }
+    
+    private void validateMemory()
+    {
+        if(isFree)
+            throw new UnsupportedOperationException("memory has been disposed");
+        else if(address() < 0)
+            throw new UnsupportedOperationException("memory address is invalid: " +address());
     }
 }

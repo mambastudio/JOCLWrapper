@@ -179,5 +179,6 @@ public class SimpleJOCL {
         System.out.println(memA.offsetIndex(24));
                 
         memA.offsetIndex(3).get();
+        memA.free();
     }
 }
