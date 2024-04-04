@@ -5,9 +5,8 @@
  */
 package wrapper.core;
 
-import coordinate.memory.type.MemoryStruct.BiObjLongFunction;
 import coordinate.memory.type.StructBase;
-import coordinate.utility.RangeLong;
+import coordinate.memory.type.StructCache;
 import java.util.Objects;
 import org.jocl.Pointer;
 
@@ -15,29 +14,16 @@ import org.jocl.Pointer;
  *
  * @author jmburu
  * @param <T>
+ * @param <S>
  */
-public interface CMemorySkeleton<T extends StructBase> {
+public interface CMemorySkeleton<T extends StructBase, S extends StructCache<T, S>> extends StructCache<T, S>{
     public boolean isSVM();
     public Pointer getPointer();
-    public long getByteCapacity();
-    public boolean isSubMemory();
-    public void free();
+    public boolean isSubMemory();  
+    public void reallocate(long size);
+    public boolean isFree();
     default boolean isLocal()
     {
         return Objects.isNull(getPointer());
-    }
-    public long size();
-    public T getStructBase();
-    default long elementSize()
-    {
-        return getStructBase().sizeOf();
-    }
-    
-    public void write(BiObjLongFunction<T> function);    
-    public void write(RangeLong range, BiObjLongFunction<T> function);    
-    public void write(T t);    
-    public void write(long index, T t);
-    public T read(long index);
-    public T read();
-    default T readLast(){return read(size()-1);}
+    }        
 }
