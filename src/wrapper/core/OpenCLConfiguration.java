@@ -49,7 +49,7 @@ public class OpenCLConfiguration {
         CL.setExceptionsEnabled(true);
         
         OpenCLConfiguration configuration = new OpenCLConfiguration();        
-        configuration.platform = CPlatform.getPlatforms().get(1);
+        configuration.platform = CPlatform.getFastestPlatform(GPU);
         configuration.device = configuration.platform.getDeviceGPU();
         configuration.context = configuration.platform.createContext(configuration.device);
         configuration.program = configuration.context.createProgram(sources);
