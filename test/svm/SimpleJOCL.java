@@ -166,14 +166,14 @@ public class SimpleJOCL {
     public static void testSVMNew4()
     {
         OpenCLConfiguration config = OpenCLConfiguration.getDefault(CLFileReader.readFile(SimpleJOCL.class, "Hello.cl"));
-        int n = 25;
+        long n = 500_000_000L;
         
         System.out.println(config.getDevice().getSVMCapabilities());
         
         SVMNative<Int32> memA = config.createSVM(new Int32(), n);   
                         
         CKernel sampleKernel = config.createKernel("sampleKernel2", memA);
-        config.execute1DKernel(sampleKernel, n, n);
+        config.execute1DKernel(sampleKernel, n, 100);
         
         System.out.println(memA);
         System.out.println(memA.offsetIndex(24));
